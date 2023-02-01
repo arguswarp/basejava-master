@@ -26,28 +26,21 @@ public class ArrayStorage {
                 return storage[i];
             }
         }
-        //  System.out.println("No such uuid in the Storage");
         return null;
     }
 
     void delete(String uuid) {
-        if (get(uuid) != null) {
-            int index = -1;
-            for (int i = 0; i < size; i++) {
-                if (storage[i].uuid.equals(uuid)) {
-                    storage[i] = null;
-                    index = i;
-                    size--;
-                }
+        int index = -1;
+        for (int i = 0; i < size; i++) {
+            if (storage[i].uuid.equals(uuid)) {
+                storage[i] = null;
+                index = i;
+                size--;
+                break;
             }
-            for (int i = 0; i < size; i++) {
-                if (i >= index) {
-                    storage[i] = storage[i + 1];
-                }
-            }
-            storage[size + 1] = null;
-        } else {
-            System.out.println("No such uuid in the Storage");
+        }
+        if (index > -1) {
+            System.arraycopy(storage, index + 1, storage, index, size - index);
         }
     }
 
@@ -55,15 +48,10 @@ public class ArrayStorage {
      * @return array, contains only Resumes in storage (without null)
      */
     Resume[] getAll() {
-        if (size == 0) {
-            System.out.println("Storage is empty");
-        }
-        return Arrays.copyOfRange(storage, 0, size);
+        return Arrays.copyOf(storage, size);
     }
 
     int size() {
-
         return size;
     }
-
 }
