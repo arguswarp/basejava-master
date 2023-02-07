@@ -8,21 +8,23 @@ import java.util.Arrays;
  * Array based storage for Resumes
  */
 public class ArrayStorage {
-    private Resume[] storage = new Resume[10000];
-
+    private final Resume[] storage = new Resume[STORAGE_LIMIT];
+    private static final int STORAGE_LIMIT = 10_000;
     private int size = 0;
 
     public void clear() {
-        Arrays.fill(storage, 0, size-1, null);
+        Arrays.fill(storage, 0, size, null);
         size = 0;
     }
 
     public void save(Resume resume) {
         int index = getIndex(resume.getUuid());
-        if (index == -1) {
-            storage[size++] = resume;
-        } else {
+        if (size >= STORAGE_LIMIT) {
+            System.out.println("ERROR : storage is full");
+        } else if (index > -1) {
             System.out.println("ERROR : resume " + resume.getUuid() + " is already in the storage");
+        } else {
+            storage[size++] = resume;
         }
     }
 
@@ -39,9 +41,8 @@ public class ArrayStorage {
     public void delete(String uuid) {
         int index = getIndex(uuid);
         if (index > -1) {
-            storage[index] = null;
-            size--;
-            System.arraycopy(storage, index + 1, storage, index, size - index);
+            storage[index] = storage[size - 1];
+            storage[size--] = null;
         } else {
             System.out.println("ERROR : no such uuid " + uuid + " in the storage");
         }

@@ -40,6 +40,21 @@ public class MainTestArrayStorage {
         printAll();
 
         System.out.println("Size: " + ARRAY_STORAGE.size());
+
+        for (int i = 0; i < 10_000; i++) {
+            Resume r = new Resume();
+            r.setUuid("uuid" + i);
+            ARRAY_STORAGE.save(r);
+        }
+
+        System.out.println("Size: " + ARRAY_STORAGE.size());
+
+        ARRAY_STORAGE.save(new Resume());
+        System.out.println("Size: " + ARRAY_STORAGE.size());
+
+        ARRAY_STORAGE.clear();
+        printAll();
+        System.out.println("Size: " + ARRAY_STORAGE.size());
     }
 
     static void printAll() {
