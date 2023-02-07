@@ -18,10 +18,9 @@ public class ArrayStorage {
     }
 
     public void save(Resume resume) {
-        int index = getIndex(resume.getUuid());
         if (size >= STORAGE_LIMIT) {
             System.out.println("ERROR : storage is full");
-        } else if (index > -1) {
+        } else if (getIndex(resume.getUuid()) > -1) {
             System.out.println("ERROR : resume " + resume.getUuid() + " is already in the storage");
         } else {
             storage[size++] = resume;
