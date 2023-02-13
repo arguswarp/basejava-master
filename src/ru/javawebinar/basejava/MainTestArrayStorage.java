@@ -3,6 +3,8 @@ package ru.javawebinar.basejava;
 import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.storage.ArrayStorage;
 
+import java.util.Arrays;
+
 /**
  * Test for your com.urise.webapp.storage.ArrayStorage implementation
  */

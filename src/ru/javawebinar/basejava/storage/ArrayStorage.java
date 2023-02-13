@@ -7,7 +7,7 @@ import java.util.Arrays;
 /**
  * Array based storage for Resumes
  */
-public class ArrayStorage implements Storage {
+public class ArrayStorage extends AbstractArrayStorage {
     private final Resume[] storage = new Resume[STORAGE_LIMIT];
     private static final int STORAGE_LIMIT = 10_000;
     private int size = 0;
@@ -26,17 +26,6 @@ public class ArrayStorage implements Storage {
             System.out.println("ERROR : resume " + resume.getUuid() + " is already in the storage");
         } else {
             storage[size++] = resume;
-        }
-    }
-
-    @Override
-    public Resume get(String uuid) {
-        int index = getIndex(uuid);
-        if (index > -1) {
-            return storage[index];
-        } else {
-            System.out.println("ERROR : no such uuid " + uuid + " in the storage");
-            return null;
         }
     }
 
@@ -60,8 +49,8 @@ public class ArrayStorage implements Storage {
             System.out.println("ERROR : resume " + resume.getUuid() + " is not present in the storage");
         }
     }
-
-    private int getIndex(String uuid) {
+    @Override
+    protected int getIndex(String uuid) {
         for (int i = 0; i < size; i++) {
             if (storage[i].getUuid().equals(uuid)) {
                 return i;
@@ -77,10 +66,5 @@ public class ArrayStorage implements Storage {
     @Override
     public Resume[] getAll() {
         return Arrays.copyOf(storage, size);
-    }
-
-    @Override
-    public int size() {
-        return size;
     }
 }
