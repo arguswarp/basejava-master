@@ -7,28 +7,20 @@ import java.util.Arrays;
 public class SortedArrayStorage extends AbstractArrayStorage {
 
     @Override
-    public void clear() {
-
-    }
-
-    @Override
     public void save(Resume resume) {
-
-    }
-
-    @Override
-    public void delete(String uuid) {
-
-    }
-
-    @Override
-    public void update(Resume resume) {
-
-    }
-
-    @Override
-    public Resume[] getAll() {
-        return new Resume[0];
+        int index = getIndex(resume.getUuid());
+        if (size >= STORAGE_LIMIT) {
+            System.out.println("ERROR : storage is full");
+        } else if (index > -1) {
+            System.out.println("ERROR : resume " + resume.getUuid() + " is already in the storage");
+        } else {
+            index = -(index)-1;
+            if (size != 0) {
+                System.arraycopy(storage, index, storage, index + 1, size - index);
+            }
+            storage[index] = resume;
+            size++;
+        }
     }
 
     @Override

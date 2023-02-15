@@ -2,21 +2,10 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.model.Resume;
 
-import java.util.Arrays;
-
 /**
  * Array based storage for Resumes
  */
 public class ArrayStorage extends AbstractArrayStorage {
-    private final Resume[] storage = new Resume[STORAGE_LIMIT];
-    private static final int STORAGE_LIMIT = 10_000;
-    private int size = 0;
-
-    @Override
-    public void clear() {
-        Arrays.fill(storage, 0, size, null);
-        size = 0;
-    }
 
     @Override
     public void save(Resume resume) {
@@ -30,26 +19,6 @@ public class ArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    public void delete(String uuid) {
-        int index = getIndex(uuid);
-        if (index > -1) {
-            storage[index] = storage[size - 1];
-            storage[size--] = null;
-        } else {
-            System.out.println("ERROR : no such uuid " + uuid + " in the storage");
-        }
-    }
-
-    @Override
-    public void update(Resume resume) {
-        int index = getIndex(resume.getUuid());
-        if (index > -1) {
-            storage[index] = resume;
-        } else {
-            System.out.println("ERROR : resume " + resume.getUuid() + " is not present in the storage");
-        }
-    }
-    @Override
     protected int getIndex(String uuid) {
         for (int i = 0; i < size; i++) {
             if (storage[i].getUuid().equals(uuid)) {
@@ -57,14 +26,5 @@ public class ArrayStorage extends AbstractArrayStorage {
             }
         }
         return -1;
-    }
-
-    /**
-     * @return array, contains only Resumes in storage (without null)
-     */
-
-    @Override
-    public Resume[] getAll() {
-        return Arrays.copyOf(storage, size);
     }
 }
