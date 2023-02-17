@@ -48,6 +48,7 @@ public abstract class AbstractArrayStorage implements Storage {
         int index = getIndex(uuid);
         if (index > -1) {
             deleteByIndex(index);
+            storage[size] = null;
             size--;
         } else {
             System.out.println("ERROR : no such uuid " + uuid + " in the storage");
