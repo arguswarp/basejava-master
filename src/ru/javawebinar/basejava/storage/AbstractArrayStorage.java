@@ -1,5 +1,8 @@
 package ru.javawebinar.basejava.storage;
 
+import ru.javawebinar.basejava.exception.ExistStorageException;
+import ru.javawebinar.basejava.exception.NotExistStorageException;
+import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Arrays;
@@ -25,8 +28,7 @@ public abstract class AbstractArrayStorage implements Storage {
         if (index > -1) {
             return storage[index];
         } else {
-            System.out.println("ERROR : no such uuid " + uuid + " in the storage");
-            return null;
+            throw new NotExistStorageException(uuid);
         }
     }
 
@@ -34,9 +36,9 @@ public abstract class AbstractArrayStorage implements Storage {
     public final void save(Resume resume) {
         int index = getIndex(resume.getUuid());
         if (size >= STORAGE_LIMIT) {
-            System.out.println("ERROR : storage is full");
+            throw new StorageException("Storage overflow", resume.getUuid());
         } else if (index > -1) {
-            System.out.println("ERROR : resume " + resume.getUuid() + " is already in the storage");
+            throw new ExistStorageException(resume.getUuid());
         } else {
             saveResume(resume, index);
             size++;
@@ -51,7 +53,7 @@ public abstract class AbstractArrayStorage implements Storage {
             storage[size] = null;
             size--;
         } else {
-            System.out.println("ERROR : no such uuid " + uuid + " in the storage");
+            throw new NotExistStorageException(uuid);
         }
     }
 
@@ -61,7 +63,7 @@ public abstract class AbstractArrayStorage implements Storage {
         if (index > -1) {
             storage[index] = resume;
         } else {
-            System.out.println("ERROR : resume " + resume.getUuid() + " is not present in the storage");
+            throw new NotExistStorageException(resume.getUuid());
         }
     }
 
