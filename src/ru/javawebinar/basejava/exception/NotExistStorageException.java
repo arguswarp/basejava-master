@@ -2,6 +2,6 @@ package ru.javawebinar.basejava.exception;
 
 public class NotExistStorageException extends StorageException {
     public NotExistStorageException(String uuid) {
-        super("Resume " + uuid + " is already in the storage", uuid);
+        super("No such resume " + uuid + " in the storage", uuid);
     }
 }
