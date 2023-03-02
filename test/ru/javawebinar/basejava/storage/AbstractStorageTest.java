@@ -1,6 +1,7 @@
 package ru.javawebinar.basejava.storage;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
@@ -9,7 +10,7 @@ import ru.javawebinar.basejava.model.Resume;
 import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class AbstractStorageTest {
-    private final Storage storage;
+    protected final Storage storage;
     private static final String UUID_1 = "uuid1";
     private static final String UUID_2 = "uuid2";
     private static final String UUID_3 = "uuid3";
@@ -68,6 +69,10 @@ public abstract class AbstractStorageTest {
     public void saveExist() {
         assertThrows(ExistStorageException.class, () -> storage.save(new Resume(UUID_1)));
     }
+    @Test
+    @Disabled
+    public void saveOverflow() {}
+
 
     @Test
     public void delete() {
