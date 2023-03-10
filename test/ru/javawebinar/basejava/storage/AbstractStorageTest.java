@@ -69,10 +69,11 @@ public abstract class AbstractStorageTest {
     public void saveExist() {
         assertThrows(ExistStorageException.class, () -> storage.save(new Resume(UUID_1)));
     }
+
     @Test
     @Disabled
-    public void saveOverflow() {}
-
+    public void saveOverflow() {
+    }
 
     @Test
     public void delete() {

@@ -4,7 +4,6 @@ import ru.javawebinar.basejava.model.Resume;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class ListStorage extends AbstractStorage {
     private static final List<Resume> listStorage = new ArrayList<>();
@@ -12,6 +11,34 @@ public class ListStorage extends AbstractStorage {
     @Override
     public void clear() {
         listStorage.clear();
+    }
+
+    @Override
+    protected <T> Resume doGet(T searchKey) {
+        return listStorage.get((int) searchKey);
+    }
+
+    @Override
+    protected <T> boolean isExist(T searchKey) {
+        int index = (int) searchKey;
+        return index > -1;
+    }
+
+    @Override
+    protected void doSave(Resume resume) {
+        listStorage.add(resume);
+    }
+
+    @Override
+    protected <T> void doDelete(T searchKey) {
+        int index = (int) searchKey;
+        listStorage.remove(index);
+    }
+
+    @Override
+    protected <T> void doUpdate(Resume resume, T searchKey) {
+        int index = (int) searchKey;
+        listStorage.set(index, resume);
     }
 
     @Override
@@ -25,47 +52,9 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    protected int getIndex(String uuid) {
-        for (Resume resume : listStorage) {
-            if (Objects.equals(resume.getUuid(), uuid)) {
-                return listStorage.indexOf(resume);
-            }
-        }
-        return -1;
+    protected <T> T searchKey(String uuid) {
+        Resume searchKey = new Resume(uuid);
+        return (T) Integer.valueOf(listStorage.indexOf(searchKey));
     }
 
-    @Override
-    protected void deleteByIndex(int index) {
-        listStorage.remove(index);
-    }
-
-    @Override
-    protected void saveResume(Resume resume, int index) {
-        listStorage.add(resume);
-    }
-
-    @Override
-    protected Resume getResume(int index) {
-        return listStorage.get(index);
-    }
-
-    @Override
-    protected void updateResume(Resume resume, int index) {
-        listStorage.set(index, resume);
-    }
-
-    @Override
-    protected void increaseSize() {
-
-    }
-
-    @Override
-    protected void decreaseSize() {
-
-    }
-
-    @Override
-    protected void eraseLastElement() {
-
-    }
 }
