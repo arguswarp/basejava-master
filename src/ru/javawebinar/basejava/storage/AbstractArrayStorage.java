@@ -8,7 +8,7 @@ import java.util.Arrays;
 /**
  * Array based storage for Resumes
  */
-public abstract class AbstractArrayStorage extends AbstractStorage {
+public abstract class AbstractArrayStorage extends AbstractStorage <Integer> {
 
     protected final Resume[] storage = new Resume[STORAGE_LIMIT];
     protected static final int STORAGE_LIMIT = 10_000;
@@ -43,20 +43,17 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     protected abstract void saveResume(Resume resume);
 
     @Override
-    protected <T> Resume doGet(T searchKey) {
-        int index = (int) searchKey;
-        return storage[index];
+    protected Resume doGet(Integer searchKey) {
+        return storage[searchKey];
     }
 
     @Override
-    protected <T> void doUpdate(Resume resume, T searchKey) {
-        int index = (int) searchKey;
-        storage[index] = resume;
+    protected void doUpdate(Resume resume, Integer searchKey) {
+        storage[searchKey] = resume;
     }
 
     @Override
-    protected <T> boolean isExist(T searchKey) {
-        int index = (int) searchKey;
-        return index > -1;
+    protected boolean isExist(Integer searchKey) {
+        return searchKey > -1;
     }
 }

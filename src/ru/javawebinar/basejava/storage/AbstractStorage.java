@@ -4,13 +4,14 @@ import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
-public abstract class AbstractStorage implements Storage {
+public abstract class AbstractStorage <K> implements Storage {
+
     @Override
     public abstract void clear();
 
     @Override
     public final Resume get(String uuid) {
-        Object searchKey = searchKey(uuid);
+        K searchKey = searchKey(uuid);
         if (isExist(searchKey)) {
             return doGet(searchKey);
         } else {
@@ -18,13 +19,13 @@ public abstract class AbstractStorage implements Storage {
         }
     }
 
-    protected abstract <T> Resume doGet(T searchKey);
+    protected abstract Resume doGet(K searchKey);
 
-    protected abstract <T> boolean isExist(T searchKey);
+    protected abstract boolean isExist(K searchKey);
 
     @Override
     public final void save(Resume resume) {
-        Object searchKey = searchKey(resume.getUuid());
+        K searchKey = searchKey(resume.getUuid());
         if (isExist(searchKey)) {
             throw new ExistStorageException(resume.getUuid());
         } else {
@@ -36,7 +37,7 @@ public abstract class AbstractStorage implements Storage {
 
     @Override
     public final void delete(String uuid) {
-        Object searchKey = searchKey(uuid);
+        K searchKey = searchKey(uuid);
         if (isExist(searchKey)) {
             doDelete(searchKey);
         } else {
@@ -44,11 +45,11 @@ public abstract class AbstractStorage implements Storage {
         }
     }
 
-    protected abstract <T> void doDelete(T searchKey);
+    protected abstract void doDelete(K searchKey);
 
     @Override
     public final void update(Resume resume) {
-        Object searchKey = searchKey(resume.getUuid());
+        K searchKey = searchKey(resume.getUuid());
         if (isExist(searchKey)) {
             doUpdate(resume, searchKey);
         } else {
@@ -56,7 +57,7 @@ public abstract class AbstractStorage implements Storage {
         }
     }
 
-    protected abstract <T> void doUpdate(Resume resume, T searchKey);
+    protected abstract void doUpdate(Resume resume, K searchKey);
 
     @Override
     public abstract Resume[] getAll();
@@ -64,5 +65,5 @@ public abstract class AbstractStorage implements Storage {
     @Override
     public abstract int size();
 
-    protected abstract <T> T searchKey(String uuid);
+    protected abstract K searchKey(String uuid);
 }
