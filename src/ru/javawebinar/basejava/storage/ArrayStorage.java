@@ -8,6 +8,18 @@ import ru.javawebinar.basejava.model.Resume;
 public class ArrayStorage extends AbstractArrayStorage {
 
     @Override
+    protected void saveResume(Resume resume) {
+        storage[size] = resume;
+        size++;
+    }
+
+    @Override
+    protected void doDelete(Integer searchKey) {
+        storage[searchKey] = storage[size - 1];
+        size--;
+    }
+
+    @Override
     protected Integer searchKey(String uuid) {
         int index = -1;
         for (int i = 0; i < size; i++) {
@@ -19,15 +31,4 @@ public class ArrayStorage extends AbstractArrayStorage {
         return index;
     }
 
-    @Override
-    protected void doDelete(Integer searchKey) {
-        storage[searchKey] = storage[size - 1];
-        size--;
-    }
-
-    @Override
-    protected void saveResume(Resume resume) {
-        storage[size] = resume;
-        size++;
-    }
 }
