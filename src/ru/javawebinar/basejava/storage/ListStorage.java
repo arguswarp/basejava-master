@@ -4,54 +4,59 @@ import ru.javawebinar.basejava.model.Resume;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ListStorage extends AbstractStorage<Integer> {
-    private static final List<Resume> listStorage = new ArrayList<>();
-
+    private static final List<Resume> storage = new ArrayList<>();
 
     @Override
     protected void doSave(Resume resume) {
-        listStorage.add(resume);
+        storage.add(resume);
     }
 
     @Override
     protected Resume doGet(Integer searchKey) {
-        return listStorage.get(searchKey);
+        return storage.get(searchKey);
     }
 
     @Override
     protected void doUpdate(Resume resume, Integer searchKey) {
-        listStorage.set(searchKey, resume);
+        storage.set(searchKey, resume);
     }
 
     @Override
     protected void doDelete(Integer searchKey) {
-        listStorage.remove((int)searchKey);
+        storage.remove((int) searchKey);
     }
 
     @Override
     public Resume[] getAll() {
-        return listStorage.toArray(new Resume[size()]);
+        return storage.toArray(new Resume[size()]);
     }
 
     @Override
     public int size() {
-        return listStorage.size();
+        return storage.size();
     }
 
     @Override
     public void clear() {
-        listStorage.clear();
+        storage.clear();
     }
 
     @Override
     protected boolean isExist(Integer searchKey) {
-        return searchKey > -1;
+        return searchKey != null;
     }
 
     @Override
-    protected Integer searchKey(String uuid) {
+    protected Integer getSearchKey(String uuid) {
         Resume searchKey = new Resume(uuid);
-        return listStorage.indexOf(searchKey);
+        for (int i = 0; i < size(); i++) {
+            if (Objects.equals(searchKey, storage.get(i))) {
+                return i;
+            }
+        }
+        return null;
     }
 }

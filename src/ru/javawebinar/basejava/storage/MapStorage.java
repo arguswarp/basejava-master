@@ -6,56 +6,50 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MapStorage extends AbstractStorage<String> {
-    private static final Map<String, Resume> mapStorage = new HashMap<>();
+    private static final Map<String, Resume> storage = new HashMap<>();
 
     @Override
     public Resume[] getAll() {
-        Resume[] result = new Resume[size()];
-        int i = 0;
-        for (Map.Entry<String, Resume> entrySet : mapStorage.entrySet()) {
-            result[i] = entrySet.getValue();
-            i++;
-        }
-        return result;
+        return storage.values().toArray(new Resume[0]);
     }
 
     @Override
     public int size() {
-        return mapStorage.size();
+        return storage.size();
     }
 
     @Override
     public void clear() {
-        mapStorage.clear();
+        storage.clear();
     }
 
     @Override
     protected void doSave(Resume resume) {
-        mapStorage.put(searchKey(resume.getUuid()), resume);
+        storage.put(getSearchKey(resume.getUuid()), resume);
     }
 
     @Override
     protected Resume doGet(String searchKey) {
-        return mapStorage.get(searchKey);
+        return storage.get(searchKey);
     }
 
     @Override
     protected void doUpdate(Resume resume, String searchKey) {
-        mapStorage.replace(searchKey, resume);
+        storage.replace(searchKey, resume);
     }
 
     @Override
     protected void doDelete(String searchKey) {
-        mapStorage.remove(searchKey);
+        storage.remove(searchKey);
     }
 
     @Override
     protected boolean isExist(String searchKey) {
-        return mapStorage.containsKey(searchKey);
+        return storage.containsKey(searchKey);
     }
 
     @Override
-    protected String searchKey(String uuid) {
+    protected String getSearchKey(String uuid) {
         return uuid;
     }
 }
