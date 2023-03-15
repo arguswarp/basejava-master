@@ -14,7 +14,7 @@ public abstract class AbstractStorage<K> implements Storage {
 
     @Override
     public final Resume get(String uuid) {
-       return doGet(getNotExistingSearchKey(uuid));
+        return doGet(getNotExistingSearchKey(uuid));
     }
 
     @Override
@@ -33,6 +33,7 @@ public abstract class AbstractStorage<K> implements Storage {
             throw new ExistStorageException(uuid);
         }
     }
+
     private K getNotExistingSearchKey(String uuid) {
         K searchKey = getSearchKey(uuid);
         if (isExist(searchKey)) {
@@ -41,15 +42,6 @@ public abstract class AbstractStorage<K> implements Storage {
             throw new NotExistStorageException(uuid);
         }
     }
-
-    @Override
-    public abstract Resume[] getAll();
-
-    @Override
-    public abstract int size();
-
-    @Override
-    public abstract void clear();
 
     protected abstract void doSave(Resume resume);
 
