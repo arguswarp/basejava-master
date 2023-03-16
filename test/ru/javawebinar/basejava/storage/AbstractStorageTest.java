@@ -7,7 +7,9 @@ import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,10 +20,14 @@ public abstract class AbstractStorageTest {
     private static final String UUID_3 = "uuid3";
     private static final String UUID_SAVED = "saved";
     private static final String UUID_NOT_EXIST = "dummy";
-    private final Resume RESUME_1 = new Resume(UUID_1);
-    private final Resume RESUME_2 = new Resume(UUID_2);
-    private final Resume RESUME_3 = new Resume(UUID_3);
-    private final Resume RESUME_SAVED = new Resume(UUID_SAVED);
+    private static final String FULL_NAME_1 = "Ivanov Ivan Ivanovich";
+    private static final String FULL_NAME_2 = "John Doe";
+    private static final String FULL_NAME_3 = "Joseph Joestar";
+    private static final String FULL_NAME_SAVED = "Gandalf the Grey";
+    private final Resume RESUME_1 = new Resume(UUID_1, FULL_NAME_1);
+    private final Resume RESUME_2 = new Resume(UUID_2, FULL_NAME_2);
+    private final Resume RESUME_3 = new Resume(UUID_3, FULL_NAME_3);
+    private final Resume RESUME_SAVED = new Resume(UUID_SAVED, FULL_NAME_SAVED);
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
@@ -40,7 +46,7 @@ public abstract class AbstractStorageTest {
         storage.clear();
         assertSize(0);
         Resume[] emptyStorage = new Resume[0];
-        assertArrayEquals(emptyStorage, storage.getAll());
+        assertArrayEquals(emptyStorage, storage.getAllSorted().toArray());
     }
 
     @Test
@@ -69,7 +75,7 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void saveExist() {
-        assertThrows(ExistStorageException.class, () -> storage.save(new Resume(UUID_1)));
+        assertThrows(ExistStorageException.class, () -> storage.save(new Resume(UUID_1, FULL_NAME_1)));
     }
 
     @Test
@@ -101,9 +107,30 @@ public abstract class AbstractStorageTest {
     }
 
     @Test
-    public void getAll() {
-        Resume[] resumes = {new Resume(UUID_1), new Resume(UUID_2), new Resume(UUID_3)};
-        assertArrayEquals(resumes, Arrays.stream(storage.getAll()).sorted().toArray());
+    public void getAllSorted() {
+        List<Resume> resumes = new ArrayList<>();
+
+        resumes.add(new Resume(UUID_1, FULL_NAME_1));
+        resumes.add(new Resume(UUID_2, FULL_NAME_2));
+        resumes.add(new Resume(UUID_3, FULL_NAME_3));
+
+        List<Resume> resumesSorted = storage.getAllSorted();
+
+        assertTrue(isListsEquals(resumes, resumesSorted));
+
+        resumes.remove(0);
+        resumes.add(new Resume(UUID_1, FULL_NAME_1));
+
+        assertFalse(isListsEquals(resumes, resumesSorted));
+    }
+
+    private boolean isListsEquals(List<Resume> listExpected, List<Resume> listActual) {
+        for (int i = 0; i < listActual.size(); i++) {
+            if (!Objects.equals(listExpected.get(i), listActual.get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Test

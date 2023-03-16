@@ -3,11 +3,22 @@ package ru.javawebinar.basejava.storage;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
 public class ListStorage extends AbstractStorage<Integer> {
     private static final List<Resume> storage = new ArrayList<>();
+
+    @Override
+    public int size() {
+        return storage.size();
+    }
+
+    @Override
+    public void clear() {
+        storage.clear();
+    }
 
     @Override
     protected void doSave(Resume resume) {
@@ -30,18 +41,8 @@ public class ListStorage extends AbstractStorage<Integer> {
     }
 
     @Override
-    public Resume[] getAll() {
-        return storage.toArray(new Resume[size()]);
-    }
-
-    @Override
-    public int size() {
-        return storage.size();
-    }
-
-    @Override
-    public void clear() {
-        storage.clear();
+    protected List<Resume> sortResumes(Comparator<Resume> resumeComparator) {
+        return storage.stream().sorted(resumeComparator).toList();
     }
 
     @Override

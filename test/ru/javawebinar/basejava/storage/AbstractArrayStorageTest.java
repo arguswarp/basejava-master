@@ -25,6 +25,6 @@ public abstract class AbstractArrayStorageTest extends AbstractStorageTest {
             fail("Storage overflow is earlier than expected");
         }
         assertEquals(STORAGE_LIMIT, storage.size());
-        assertThrows(StorageException.class, () -> storage.save(new Resume()));
+        assertThrows(StorageException.class, () -> storage.save(new Resume("Overflowed")));
     }
 }
