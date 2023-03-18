@@ -125,12 +125,7 @@ public abstract class AbstractStorageTest {
     }
 
     private boolean isListsEquals(List<Resume> listExpected, List<Resume> listActual) {
-        for (int i = 0; i < listActual.size(); i++) {
-            if (!Objects.equals(listExpected.get(i), listActual.get(i))) {
-                return false;
-            }
-        }
-        return true;
+        return Objects.equals(listExpected, listActual);
     }
 
     @Test
