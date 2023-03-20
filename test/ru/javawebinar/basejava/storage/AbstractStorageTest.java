@@ -121,7 +121,7 @@ public abstract class AbstractStorageTest {
         resumes.add(RESUME_SAVED);
 
         assertFalse(isListsEquals(resumes, resumesSorted));
-        resumes.remove(resumes.size()-1);
+        resumes.remove(resumes.size() - 1);
         resumes.remove(0);
         resumes.add(new Resume(UUID_1, FULL_NAME_1));
 
