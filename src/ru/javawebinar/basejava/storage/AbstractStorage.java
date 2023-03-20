@@ -4,10 +4,13 @@ import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 public abstract class AbstractStorage<K> implements Storage {
+
+    private static final Comparator<Resume> COMPARATOR_RESUME = Comparator.comparing(Resume::getFullName).thenComparing(Resume::getUuid);
 
     @Override
     public final void save(Resume resume) {
@@ -48,10 +51,12 @@ public abstract class AbstractStorage<K> implements Storage {
 
     @Override
     public List<Resume> getAllSorted() {
-        return sortResumes(Comparator.comparing(Resume::getFullName).thenComparing(Resume::getUuid));
+        List<Resume> resumes = new ArrayList<>(doCopyAll());
+        resumes.sort(COMPARATOR_RESUME);
+        return resumes;
     }
 
-    protected abstract List<Resume> sortResumes(Comparator<Resume> resumeComparator);
+    protected abstract List<Resume> doCopyAll();
 
     protected abstract void doSave(Resume resume);
 

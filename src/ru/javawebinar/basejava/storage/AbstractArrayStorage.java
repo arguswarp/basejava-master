@@ -3,8 +3,8 @@ package ru.javawebinar.basejava.storage;
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -38,8 +38,8 @@ public abstract class AbstractArrayStorage extends AbstractStorage<Integer> {
     }
 
     @Override
-    protected List<Resume> sortResumes(Comparator<Resume> resumeComparator) {
-        return Arrays.stream(Arrays.copyOf(storage, size)).sorted(resumeComparator).toList();
+    protected List<Resume> doCopyAll() {
+        return new ArrayList<>(List.of(Arrays.copyOf(storage, size)));
     }
 
     protected abstract void saveResume(Resume resume);

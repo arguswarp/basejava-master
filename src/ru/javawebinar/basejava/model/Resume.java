@@ -17,8 +17,8 @@ public class Resume {
         this.fullName = fullName;
     }
 
-    public Resume(String uuid) {
-        this(uuid, null);
+    public Resume(String fullName) {
+        this(fullName, fullName);
     }
 
     public String getUuid() {

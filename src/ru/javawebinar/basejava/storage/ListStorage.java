@@ -3,7 +3,6 @@ package ru.javawebinar.basejava.storage;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,8 +40,8 @@ public class ListStorage extends AbstractStorage<Integer> {
     }
 
     @Override
-    protected List<Resume> sortResumes(Comparator<Resume> resumeComparator) {
-        return storage.stream().sorted(resumeComparator).toList();
+    protected List<Resume> doCopyAll() {
+        return new ArrayList<>(storage);
     }
 
     @Override
