@@ -1,7 +1,6 @@
 package ru.javawebinar.basejava.model;
 
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Initial resume class
@@ -12,6 +11,10 @@ public class Resume {
     private final String uuid;
 
     private final String fullName;
+
+    private final Map<ContactType, String[]> contacts = new EnumMap<>(ContactType.class);
+
+    private final Map<SectionType, List<String>> sections = new EnumMap<>(SectionType.class);
 
     public Resume(String uuid, String fullName) {
         Objects.requireNonNull(uuid, "uuid must not be null");
@@ -31,6 +34,8 @@ public class Resume {
     public String getFullName() {
         return fullName;
     }
+
+
 
     @Override
     public boolean equals(Object o) {
