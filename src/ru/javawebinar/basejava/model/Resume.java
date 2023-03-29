@@ -1,6 +1,9 @@
 package ru.javawebinar.basejava.model;
 
-import java.util.*;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Initial resume class
@@ -12,9 +15,9 @@ public class Resume {
 
     private final String fullName;
 
-    private final Map<ContactType, String[]> contacts = new EnumMap<>(ContactType.class);
+    private final Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
 
-    private final Map<SectionType, List<String>> sections = new EnumMap<>(SectionType.class);
+    private final Map<SectionType, AbstractSection> sections = new EnumMap<>(SectionType.class);
 
     public Resume(String uuid, String fullName) {
         Objects.requireNonNull(uuid, "uuid must not be null");
@@ -27,6 +30,14 @@ public class Resume {
         this(String.valueOf(UUID.randomUUID()), fullName);
     }
 
+    public void addContact(ContactType contactType, String content) {
+        contacts.put(contactType, content);
+    }
+
+    public void addSection(SectionType sectionType, AbstractSection section) {
+        sections.put(sectionType, section);
+    }
+
     public String getUuid() {
         return uuid;
     }
@@ -35,7 +46,13 @@ public class Resume {
         return fullName;
     }
 
+    public Map<ContactType, String> getContacts() {
+        return contacts;
+    }
 
+    public Map<SectionType, AbstractSection> getSections() {
+        return sections;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -57,9 +74,8 @@ public class Resume {
 
     @Override
     public String toString() {
-        return "Resume{" +
-                "uuid='" + uuid + '\'' +
-                ", fullName='" + fullName + '\'' +
-                '}';
+        return "fullName='" + fullName + '\'' + "\n" +
+                "contacts=" + contacts + "\n" +
+                "sections=" + sections + "\n";
     }
 }
