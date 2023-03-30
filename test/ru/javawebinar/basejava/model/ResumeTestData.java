@@ -27,7 +27,7 @@ public class ResumeTestData {
         resume.addContact(ContactType.PHONE, "+7(921) 855-0482");
         resume.addContact(ContactType.SKYPE, "skype:grigory.kislin");
         resume.addContact(ContactType.MAIL, " gkislin@yandex.ru");
-        resume.addContact(ContactType.PROFILES, "https://www.linkedin.com/in/gkislin" + "\n" +
+        resume.addContact(ContactType.LINKEDIN, "https://www.linkedin.com/in/gkislin" + "\n" +
                 "https://github.com/gkislin" + "\n" +
                 "https://stackoverflow.com/users/548473" + "\n" +
                 "http://gkislin.ru/");

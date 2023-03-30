@@ -4,16 +4,20 @@ import java.util.List;
 import java.util.Objects;
 
 public class Company {
-    private final String name;
-    private final String url;
+    private final Link homepage;
     private final List<Period> periods;
 
-    public Company(String name, String url, List<Period> periods) {
-        this.name = name;
-        this.url = url;
+    public Company(Link homepage, List<Period> periods) {
+        Objects.requireNonNull(homepage, "homepage must not be null");
+        Objects.requireNonNull(periods, "periods must not be null");
+        this.homepage = homepage;
         this.periods = periods;
     }
-
+    public Company(String name, String url, List<Period> periods) {
+        homepage = new Link(name,url);
+        Objects.requireNonNull(periods, "periods must not be null");
+        this.periods = periods;
+    }
     public List<Period> getPeriods() {
         return periods;
     }
@@ -25,19 +29,21 @@ public class Company {
 
         Company company = (Company) o;
 
-        return Objects.equals(periods, company.periods);
+        if (!homepage.equals(company.homepage)) return false;
+        return periods.equals(company.periods);
     }
 
     @Override
     public int hashCode() {
-        return periods != null ? periods.hashCode() : 0;
+        int result = homepage.hashCode();
+        result = 31 * result + periods.hashCode();
+        return result;
     }
 
     @Override
     public String toString() {
         return "Company{" +
-                "name='" + name + '\'' +
-                ", url='" + url + '\'' + "\n" +
+                "homepage=" + homepage +
                 ", periods=" + periods +
                 '}';
     }
