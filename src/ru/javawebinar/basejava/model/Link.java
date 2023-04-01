@@ -43,6 +43,6 @@ public class Link {
         return "Link{" +
                 "name='" + name + '\'' +
                 ", url='" + url + '\'' +
-                '}';
+                '}' +"\n";
     }
 }

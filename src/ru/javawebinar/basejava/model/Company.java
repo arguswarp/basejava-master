@@ -45,6 +45,6 @@ public class Company {
         return "Company{" +
                 "homepage=" + homepage +
                 ", periods=" + periods +
-                '}';
+                '}' +"\n";
     }
 }

@@ -34,6 +34,6 @@ public class ListSection extends AbstractSection {
     public String toString() {
         return "ListSection{" +
                 "textList=" + items +
-                "} " + super.toString();
+                "} " + "\n";
     }
 }

@@ -34,6 +34,6 @@ public class CompanySection extends AbstractSection {
     public String toString() {
         return "CompanySection{" +
                 "companies=" + companies +
-                "} " + super.toString();
+                "} " + "\n";
     }
 }

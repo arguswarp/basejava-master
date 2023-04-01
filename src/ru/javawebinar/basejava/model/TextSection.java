@@ -33,6 +33,6 @@ public class TextSection extends AbstractSection {
     public String toString() {
         return "TextSection{" +
                 "text='" + content + '\'' +
-                "} " + super.toString();
+                "} "+"\n";
     }
 }

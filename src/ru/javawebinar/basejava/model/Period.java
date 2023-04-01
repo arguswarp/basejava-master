@@ -10,13 +10,24 @@ public class Period {
     private final String description;
 
     public Period(LocalDate startDate, LocalDate endDate, String title, String description) {
-        Objects.requireNonNull(startDate,"start date must not be null");
-        Objects.requireNonNull(endDate,"end date must not be null");
-        Objects.requireNonNull(title,"title must not be null");
+        Objects.requireNonNull(startDate, "start date must not be null");
+        Objects.requireNonNull(endDate, "end date must not be null");
+        Objects.requireNonNull(title, "title must not be null");
         this.startDate = startDate;
         this.endDate = endDate;
         this.title = title;
         this.description = description;
+    }
+
+    public Period(int startMonth, int startYear, int endMonth, int endYear, String title, String description) {
+        startDate = LocalDate.of(startYear, startMonth, 1);
+        endDate = LocalDate.of(endYear, endMonth, 1);
+        this.title = title;
+        this.description = description;
+    }
+
+    public Period(int startMonth, int startYear, int endMonth, int endYear, String title) {
+       this(startMonth, startYear,endMonth,endYear,title,"");
     }
 
     public LocalDate getStartDate() {
