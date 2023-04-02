@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static ru.javawebinar.basejava.model.ResumeTestData.createFilledResume;
 
 public abstract class AbstractStorageTest {
     protected final Storage storage;
@@ -24,10 +25,10 @@ public abstract class AbstractStorageTest {
     private static final String FULL_NAME_2 = "John Doe";
     private static final String FULL_NAME_3 = "Joseph Joestar";
     private static final String FULL_NAME_SAVED = "Gandalf the Grey";
-    private final Resume RESUME_1 = new Resume(UUID_1, FULL_NAME_1);
-    private final Resume RESUME_2 = new Resume(UUID_2, FULL_NAME_2);
-    private final Resume RESUME_3 = new Resume(UUID_3, FULL_NAME_3);
-    private final Resume RESUME_SAVED = new Resume(UUID_SAVED, FULL_NAME_SAVED);
+    private final Resume RESUME_1 = createFilledResume(UUID_1, FULL_NAME_1);
+    private final Resume RESUME_2 = createFilledResume(UUID_2, FULL_NAME_2);
+    private final Resume RESUME_3 = createFilledResume(UUID_3, FULL_NAME_3);
+    private final Resume RESUME_SAVED = createFilledResume(UUID_SAVED, FULL_NAME_SAVED);
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
@@ -110,9 +111,9 @@ public abstract class AbstractStorageTest {
     public void getAllSorted() {
         List<Resume> resumes = new ArrayList<>();
 
-        resumes.add(new Resume(UUID_1, FULL_NAME_1));
-        resumes.add(new Resume(UUID_2, FULL_NAME_2));
-        resumes.add(new Resume(UUID_3, FULL_NAME_3));
+        resumes.add(createFilledResume(UUID_1, FULL_NAME_1));
+        resumes.add(createFilledResume(UUID_2, FULL_NAME_2));
+        resumes.add(createFilledResume(UUID_3, FULL_NAME_3));
 
         List<Resume> resumesSorted = storage.getAllSorted();
 
@@ -123,7 +124,7 @@ public abstract class AbstractStorageTest {
         assertFalse(isListsEquals(resumes, resumesSorted));
         resumes.remove(resumes.size() - 1);
         resumes.remove(0);
-        resumes.add(new Resume(UUID_1, FULL_NAME_1));
+        resumes.add(createFilledResume(UUID_1, FULL_NAME_1));
 
         assertFalse(isListsEquals(resumes, resumesSorted));
     }
