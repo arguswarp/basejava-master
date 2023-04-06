@@ -54,35 +54,35 @@ public class ResumeTestData {
         List<Company> companies = new ArrayList<>();
 
         Company company1 = createCompany("Java Online Projects", "http://javaops.ru/",
-                new Period(DateUtil.of(2013, Month.OCTOBER), LocalDate.now(), "Автор проекта",
+                new Company.Period(DateUtil.of(2013, Month.OCTOBER), LocalDate.now(), "Автор проекта",
                         "Создание, организация и проведение Java онлайн проектов и стажировок"));
         Company company2 = createCompany("Wrike", "https://www.wrike.com/",
-                new Period(10, 2014, 10, 2016,
+                new Company.Period(10, 2014, 10, 2016,
                         "Старший разработчик (backend)",
                         "Проектирование и разработка онлайн платформы управления проектами Wrike (Java 8 API, Maven, Spring, MyBatis, Guava, Vaadin, PostgreSQL, Redis). Двухфакторная аутентификация, авторизация по OAuth1, OAuth2, JWT SSO"));
         Company company3 = createCompany("RIT Center", "",
-                new Period(4, 2012, 10, 2014,
+                new Company.Period(4, 2012, 10, 2014,
                         "Java архитектор",
                         "Организация процесса разработки системы ERP для разных окружений: релизная политика, версионирование, ведение CI (Jenkins), миграция базы (кастомизация Flyway), конфигурирование системы (pgBoucer, Nginx), AAA via SSO. Архитектура БД и серверной части системы. Разработка интергационных сервисов: CMIS, BPMN2, 1C (WebServices), сервисов общего назначения (почта, экспорт в pdf, doc, html). Интеграция Alfresco JLAN для online редактирование из браузера документов MS Office. Maven + plugin development, Ant, Apache Commons, Spring security, Spring MVC, Tomcat,WSO2, xcmis, OpenCmis, Bonita, Python scripting, Unix shell remote scripting via ssh tunnels, PL/Python"));
         Company company4 = createCompany("Luxoft (Deutsche Bank)", "http://www.luxoft.ru/",
-                new Period(12, 2010, 4, 2012,
+                new Company.Period(12, 2010, 4, 2012,
                         "Ведущий программист",
                         "Участие в проекте Deutsche Bank CRM (WebLogic, Hibernate, Spring, Spring MVC, SmartGWT, GWT, Jasper, Oracle). Реализация клиентской и серверной части CRM. Реализация RIA-приложения для администрирования, мониторинга и анализа результатов в области алгоритмического трейдинга. JPA, Spring, Spring-MVC, GWT, ExtGWT (GXT), Highstock, Commet, HTML5."));
         Company company5 = createCompany("Yota", "https://www.yota.ru/",
-                new Period(6, 2008, 12, 2010,
+                new Company.Period(6, 2008, 12, 2010,
                         "Ведущий специалист",
                         "Дизайн и имплементация Java EE фреймворка для отдела \"Платежные Системы\" (GlassFish v2.1, v3, OC4J, EJB3, JAX-WS RI 2.1, Servlet 2.4, JSP, JMX, JMS, Maven2). Реализация администрирования, статистики и мониторинга фреймворка. Разработка online JMX клиента (Python/ Jython, Django, ExtJS)"));
         Company company6 = createCompany("Enkata", "http://enkata.com/",
-                new Period(3, 2007, 6, 2008,
+                new Company.Period(3, 2007, 6, 2008,
                         "Разработчик ПО",
                         "Реализация клиентской (Eclipse RCP) и серверной (JBoss 4.2, Hibernate 3.0, Tomcat, JMS) частей кластерного J2EE приложения (OLAP, Data mining)."));
         Company company7 = createCompany("Siemens AG", "https://www.siemens.com/ru/ru/home.html",
-                new Period(1, 2005, 2, 2007,
+                new Company.Period(1, 2005, 2, 2007,
                         "Разработчик ПО",
                         "Разработка информационной модели, проектирование интерфейсов, реализация и отладка ПО на мобильной IN платформе Siemens @vantage (Java, Unix)."));
 
         Company company8 = createCompany("Alcatel", "http://www.alcatel.ru/",
-                new Period(9, 1997, 1, 2005,
+                new Company.Period(9, 1997, 1, 2005,
                         "Инженер по аппаратному и программному тестированию",
                         "Тестирование, отладка, внедрение ПО цифровой телефонной станции Alcatel 1000 S12 (CHILL, ASM)."));
 
@@ -100,25 +100,25 @@ public class ResumeTestData {
         List<Company> educations = new ArrayList<>();
 
         Company education1 = createCompany("Coursera", "https://www.coursera.org/course/progfun",
-                new Period(3, 2013, 5, 2013,
+                new Company.Period(3, 2013, 5, 2013,
                         "'Functional Programming Principles in Scala' by Martin Odersky"));
         Company education2 = createCompany("Luxoft", "http://www.luxoft-training.ru/training/catalog/course.html?ID=22366",
-                new Period(3, 2011, 4, 2011,
+                new Company.Period(3, 2011, 4, 2011,
                         "Курс 'Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.'"));
         Company education3 = createCompany("Siemens AG", "http://www.siemens.ru/",
-                new Period(3, 2011, 4, 2011,
+                new Company.Period(3, 2011, 4, 2011,
                         "3 месяца обучения мобильным IN сетям (Берлин)"));
         Company education4 = createCompany("Alcatel", "http://www.alcatel.ru/",
-                new Period(1, 2005, 4, 2005,
+                new Company.Period(1, 2005, 4, 2005,
                         "6 месяцев обучения цифровым телефонным сетям (Москва)"));
         Company education5 = createCompany("Санкт-Петербургский национальный исследовательский университет информационных технологий, механики и оптики",
                 "http://www.ifmo.ru/",
-                new Period(9, 1993, 7, 1996,
+                new Company.Period(9, 1993, 7, 1996,
                         "Аспирантура (программист С, С++)"),
-                new Period(9, 1987, 7, 1993,
+                new Company.Period(9, 1987, 7, 1993,
                         "Инженер (программист Fortran, C)"));
         Company education6 = createCompany("Заочная физико-техническая школа при МФТИ", "https://mipt.ru/",
-                new Period(9, 1984, 6, 1987,
+                new Company.Period(9, 1984, 6, 1987,
                         "Закончил с отличием"));
 
         educations.add(education1);
@@ -133,7 +133,7 @@ public class ResumeTestData {
         return resume;
     }
 
-    public static Company createCompany(String name, String url, Period... periods) {
+    public static Company createCompany(String name, String url, Company.Period... periods) {
         return new Company(name, url, List.of(periods));
     }
 

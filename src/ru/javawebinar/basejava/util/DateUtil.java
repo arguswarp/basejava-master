@@ -7,4 +7,7 @@ public class DateUtil {
     public static LocalDate of(int year, Month month) {
         return LocalDate.of(year,month,1);
     }
+    public static LocalDate of(int year, int month) {
+        return LocalDate.of(year,month,1);
+    }
 }

@@ -19,8 +19,10 @@ public class MainFile {
         if (files.isPresent()) {
             for (File f : files.get()) {
                 if (f.isFile()) {
-                    System.out.println(f.getName());
+                    System.out.println("File: " + f.getName());
                 } else {
+                    System.out.println();
+                    System.out.println("Directory: " + f.getName());
                     showFiles(f);
                 }
             }
