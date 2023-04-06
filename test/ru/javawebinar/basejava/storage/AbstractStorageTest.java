@@ -7,6 +7,7 @@ import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -15,6 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static ru.javawebinar.basejava.model.ResumeTestData.createFilledResume;
 
 public abstract class AbstractStorageTest {
+
+    protected static final File STORAGE_DIR = new File("C:\\Users\\argus\\Documents\\basejava-master\\storage");
     protected final Storage storage;
     private static final String UUID_1 = "uuid1";
     private static final String UUID_2 = "uuid2";
@@ -99,7 +102,7 @@ public abstract class AbstractStorageTest {
     @Test
     public void update() {
         storage.update(RESUME_3);
-        assertSame(RESUME_3, storage.get(UUID_3));
+        assertEquals(RESUME_3, storage.get(UUID_3));
     }
 
     @Test
