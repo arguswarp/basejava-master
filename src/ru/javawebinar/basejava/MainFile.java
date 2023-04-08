@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.Optional;
 
 public class MainFile {
+
+    private static int i = 0;
+
     public static void main(String[] args) {
         File directory = new File("./");
 
@@ -14,16 +17,20 @@ public class MainFile {
         showFiles(directory);
         System.out.println();
     }
+
     public static void showFiles(File directory) {
         Optional<File[]> files = Optional.ofNullable(directory.listFiles());
+        StringBuilder spaces = new StringBuilder();
+        spaces.append(" ".repeat(i));
         if (files.isPresent()) {
             for (File f : files.get()) {
                 if (f.isFile()) {
-                    System.out.println("File: " + f.getName());
+                    System.out.print(spaces + "File: " + f.getName() + "\n");
                 } else {
-                    System.out.println();
-                    System.out.println("Directory: " + f.getName());
+                    System.out.print(spaces + "Directory: " + f.getName() + "\n");
+                    i++;
                     showFiles(f);
+                    i--;
                 }
             }
         }

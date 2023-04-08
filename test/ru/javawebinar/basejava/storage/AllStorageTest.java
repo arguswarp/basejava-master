@@ -5,10 +5,11 @@ import org.junit.platform.suite.api.Suite;
 
 @Suite
 @SelectClasses({ArrayStorageTest.class,
-                SortedArrayStorageTest.class,
-                ListStorageTest.class,
-                MapUuidStorageTest.class,
-                MapResumeStorageTest.class,
-                ObjectStreamStorageTest.class})
+        SortedArrayStorageTest.class,
+        ListStorageTest.class,
+        MapUuidStorageTest.class,
+        MapResumeStorageTest.class,
+        ObjectStreamFileStorageTest.class,
+        ObjectStreamPathStorageTest.class})
 public class AllStorageTest {
 }
