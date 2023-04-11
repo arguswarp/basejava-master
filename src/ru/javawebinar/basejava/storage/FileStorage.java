@@ -2,6 +2,8 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
+import ru.javawebinar.basejava.storage.serialization.ObjectStreamSerialization;
+import ru.javawebinar.basejava.storage.serialization.SerializationStrategy;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -36,12 +38,8 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     protected List<Resume> doCopyAll() {
-        File[] files = directory.listFiles();
-        if (files == null) {
-            throw new StorageException("directory read error", null);
-        }
         List<Resume> listCopy = new ArrayList<>();
-        for (File f : files) {
+        for (File f : getFiles()) {
             listCopy.add(doGet(f));
         }
         return listCopy;
@@ -52,10 +50,10 @@ public class FileStorage extends AbstractStorage<File> {
         File file = getSearchKey(resume.getUuid());
         try {
             file.createNewFile();
-            doWrite(resume, new FileOutputStream(file));
         } catch (IOException e) {
             throw new StorageException("file write error" + file.getAbsolutePath(), file.getName(), e);
         }
+        doUpdate(resume, file);
     }
 
     @Override
@@ -72,7 +70,7 @@ public class FileStorage extends AbstractStorage<File> {
         try {
             doWrite(resume, new BufferedOutputStream(new FileOutputStream(file)));
         } catch (IOException e) {
-            throw new StorageException("file write error", file.getName(), e);
+            throw new StorageException("file update error", file.getName(), e);
         }
     }
 
@@ -95,28 +93,29 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     public void clear() {
-        File[] files = directory.listFiles();
-        if (files != null) {
-            for (File f : files) {
-                doDelete(f);
-            }
+        for (File f : getFiles()) {
+            doDelete(f);
         }
     }
 
     @Override
     public int size() {
-        String[] files = directory.list();
+        return getFiles().length;
+    }
+
+    private File[] getFiles() {
+        File[] files = directory.listFiles();
         if (files == null) {
             throw new StorageException("directory read error", null);
         }
-        return files.length;
+        return files;
     }
 
-    protected void doWrite(Resume resume, OutputStream outputStream) throws IOException{
-        serializationStrategy.write(resume,outputStream);
+    protected void doWrite(Resume resume, OutputStream outputStream) throws IOException {
+        serializationStrategy.write(resume, outputStream);
     }
 
     protected Resume doRead(InputStream inputStream) throws IOException {
-       return serializationStrategy.read(inputStream);
+        return serializationStrategy.read(inputStream);
     }
 }
