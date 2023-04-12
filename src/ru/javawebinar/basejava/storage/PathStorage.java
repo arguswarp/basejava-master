@@ -2,8 +2,8 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
-import ru.javawebinar.basejava.storage.serialization.ObjectStreamSerialization;
-import ru.javawebinar.basejava.storage.serialization.SerializationStrategy;
+import ru.javawebinar.basejava.storage.serialization.ObjectStreamSerializer;
+import ru.javawebinar.basejava.storage.serialization.StreamSerializer;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -19,29 +19,29 @@ public class PathStorage extends AbstractStorage<Path> {
 
     private final Path directory;
 
-    private SerializationStrategy serializationStrategy;
+    private StreamSerializer streamSerializer;
 
-    protected PathStorage(String dir, SerializationStrategy serializationStrategy) {
+    protected PathStorage(String dir, StreamSerializer streamSerializer) {
         directory = Paths.get(dir);
         Objects.requireNonNull(directory, "directory must not be null");
-        Objects.requireNonNull(serializationStrategy, "serialization strategy must not be null");
+        Objects.requireNonNull(streamSerializer, "serialization strategy must not be null");
         if (!Files.isDirectory(directory) || !Files.isWritable(directory) || !Files.isReadable(directory)) {
             throw new IllegalArgumentException(dir + " is not directory or is not readable/writeable");
         }
-        this.serializationStrategy = serializationStrategy;
+        this.streamSerializer = streamSerializer;
     }
 
     protected PathStorage(String dir) {
-        this(dir, new ObjectStreamSerialization());
+        this(dir, new ObjectStreamSerializer());
     }
 
-    public void setSerializationStrategy(SerializationStrategy serializationStrategy) {
-        this.serializationStrategy = serializationStrategy;
+    public void setSerializationStrategy(StreamSerializer streamSerializer) {
+        this.streamSerializer = streamSerializer;
     }
 
     @Override
     protected List<Resume> doCopyAll() {
-        return getStream().map(this::doGet).toList();
+        return getFilesList().map(this::doGet).toList();
     }
 
     @Override
@@ -76,7 +76,7 @@ public class PathStorage extends AbstractStorage<Path> {
     @Override
     protected void doDelete(Path path) {
         try {
-            Files.deleteIfExists(path);
+            Files.delete(path);
         } catch (IOException e) {
             throw new StorageException("path delete error", path.getFileName().toString());
         }
@@ -84,7 +84,7 @@ public class PathStorage extends AbstractStorage<Path> {
 
     @Override
     protected boolean isExist(Path path) {
-        return Files.exists(path);
+        return Files.isRegularFile(path);
     }
 
     @Override
@@ -94,27 +94,27 @@ public class PathStorage extends AbstractStorage<Path> {
 
     @Override
     public void clear() {
-        getStream().forEach(this::doDelete);
+        getFilesList().forEach(this::doDelete);
     }
 
     @Override
     public int size() {
-        return getStream().toList().size();
+        return (int) getFilesList().count();
     }
 
-    private Stream<Path> getStream() {
+    private Stream<Path> getFilesList() {
         try {
             return Files.list(directory);
         } catch (IOException e) {
-            throw new StorageException("directory read error", null);
+            throw new StorageException("directory read error", e);
         }
     }
 
     protected void doWrite(Resume resume, OutputStream outputStream) throws IOException {
-        serializationStrategy.write(resume, outputStream);
+        streamSerializer.write(resume, outputStream);
     }
 
     protected Resume doRead(InputStream inputStream) throws IOException {
-        return serializationStrategy.read(inputStream);
+        return streamSerializer.read(inputStream);
     }
 }

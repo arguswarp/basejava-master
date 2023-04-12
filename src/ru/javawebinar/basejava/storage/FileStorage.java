@@ -2,8 +2,8 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
-import ru.javawebinar.basejava.storage.serialization.ObjectStreamSerialization;
-import ru.javawebinar.basejava.storage.serialization.SerializationStrategy;
+import ru.javawebinar.basejava.storage.serialization.ObjectStreamSerializer;
+import ru.javawebinar.basejava.storage.serialization.StreamSerializer;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -14,9 +14,9 @@ public class FileStorage extends AbstractStorage<File> {
 
     private final File directory;
 
-    private SerializationStrategy serializationStrategy;
+    private StreamSerializer streamSerializer;
 
-    protected FileStorage(File directory, ObjectStreamSerialization serializationStrategy) {
+    protected FileStorage(File directory, ObjectStreamSerializer serializationStrategy) {
         Objects.requireNonNull(directory, "directory must not be null");
         if (!directory.isDirectory()) {
             throw new IllegalArgumentException(directory.getAbsolutePath() + "is not directory");
@@ -25,15 +25,15 @@ public class FileStorage extends AbstractStorage<File> {
             throw new IllegalArgumentException(directory.getAbsolutePath() + "is not readable/writeable");
         }
         this.directory = directory;
-        this.serializationStrategy = serializationStrategy;
+        this.streamSerializer = serializationStrategy;
     }
 
     protected FileStorage(File directory) {
-        this(directory, new ObjectStreamSerialization());
+        this(directory, new ObjectStreamSerializer());
     }
 
-    public void setSerializationStrategy(SerializationStrategy serializationStrategy) {
-        this.serializationStrategy = serializationStrategy;
+    public void setSerializationStrategy(StreamSerializer streamSerializer) {
+        this.streamSerializer = streamSerializer;
     }
 
     @Override
@@ -106,16 +106,16 @@ public class FileStorage extends AbstractStorage<File> {
     private File[] getFiles() {
         File[] files = directory.listFiles();
         if (files == null) {
-            throw new StorageException("directory read error", null);
+            throw new StorageException("directory read error");
         }
         return files;
     }
 
     protected void doWrite(Resume resume, OutputStream outputStream) throws IOException {
-        serializationStrategy.write(resume, outputStream);
+        streamSerializer.write(resume, outputStream);
     }
 
     protected Resume doRead(InputStream inputStream) throws IOException {
-        return serializationStrategy.read(inputStream);
+        return streamSerializer.read(inputStream);
     }
 }
