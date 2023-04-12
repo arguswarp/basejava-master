@@ -6,14 +6,18 @@ import java.util.Objects;
 
 public class CompanySection extends AbstractSection {
     private static final long serialVersionUID = 1L;
-    private final List<Company> companies;
+    private List<Company> companies;
 
-    public CompanySection(List <Company> companies) {
-        Objects.requireNonNull(companies,"companies must not be null");
+    public CompanySection() {
+
+    }
+
+    public CompanySection(List<Company> companies) {
+        Objects.requireNonNull(companies, "companies must not be null");
         this.companies = companies;
     }
 
-    public CompanySection(Company ... companies) {
+    public CompanySection(Company... companies) {
         this(Arrays.asList(companies));
     }
 

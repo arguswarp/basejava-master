@@ -1,7 +1,11 @@
 package ru.javawebinar.basejava.model;
 
 import ru.javawebinar.basejava.util.DateUtil;
+import ru.javawebinar.basejava.util.LocalDateAdapter;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Month;
@@ -9,10 +13,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Company implements Serializable {
     private static final long serialVersionUID = 1L;
-    private final Link homepage;
-    private final List<Period> periods;
+    private Link homepage;
+    private List<Period> periods;
+
+    public Company() {
+
+    }
+
 
     public Company(Link homepage, List<Period> periods) {
         Objects.requireNonNull(homepage, "homepage must not be null");
@@ -20,13 +30,15 @@ public class Company implements Serializable {
         this.homepage = homepage;
         this.periods = periods;
     }
+
     public Company(String name, String url, List<Period> periods) {
-        this(new Link(name,url),periods);
+        this(new Link(name, url), periods);
     }
 
-    public Company(String name, String url, Period ... periods) {
-        this(new Link(name,url), Arrays.asList(periods));
+    public Company(String name, String url, Period... periods) {
+        this(new Link(name, url), Arrays.asList(periods));
     }
+
     public List<Period> getPeriods() {
         return periods;
     }
@@ -54,15 +66,22 @@ public class Company implements Serializable {
         return "Company{" +
                 "homepage=" + homepage +
                 ", periods=" + periods +
-                '}' +"\n";
+                '}' + "\n";
     }
 
-    public static class Period implements Serializable{
+    @XmlAccessorType(XmlAccessType.FIELD)
+    public static class Period implements Serializable {
         private static final long serialVersionUID = 1L;
-        private final LocalDate startDate;
-        private final LocalDate endDate;
-        private final String title;
-        private final String description;
+        @XmlJavaTypeAdapter(LocalDateAdapter.class)
+        private LocalDate startDate;
+        @XmlJavaTypeAdapter(LocalDateAdapter.class)
+        private LocalDate endDate;
+        private String title;
+        private String description;
+
+        public Period() {
+
+        }
 
         public Period(LocalDate startDate, LocalDate endDate, String title, String description) {
             Objects.requireNonNull(startDate, "start date must not be null");
@@ -75,15 +94,15 @@ public class Company implements Serializable {
         }
 
         public Period(int startMonth, int startYear, int endMonth, int endYear, String title, String description) {
-            this(DateUtil.of(startYear, startMonth), DateUtil.of(endYear, endMonth),title,description);
+            this(DateUtil.of(startYear, startMonth), DateUtil.of(endYear, endMonth), title, description);
         }
 
         public Period(Month startMonth, int startYear, Month endMonth, int endYear, String title, String description) {
-            this(DateUtil.of(startYear, startMonth), DateUtil.of(endYear, endMonth),title,description);
+            this(DateUtil.of(startYear, startMonth), DateUtil.of(endYear, endMonth), title, description);
         }
 
         public Period(int startMonth, int startYear, int endMonth, int endYear, String title) {
-           this(startMonth, startYear,endMonth,endYear,title,"");
+            this(startMonth, startYear, endMonth, endYear, title, "");
         }
 
         public LocalDate getStartDate() {
