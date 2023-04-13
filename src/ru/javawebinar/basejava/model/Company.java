@@ -41,6 +41,14 @@ public class Company implements Serializable {
         this(new Link(name, url), Arrays.asList(periods));
     }
 
+    public Link getHomepage() {
+        return homepage;
+    }
+
+    public void setHomepage(Link homepage) {
+        this.homepage = homepage;
+    }
+
     public List<Period> getPeriods() {
         return periods;
     }
