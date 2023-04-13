@@ -1,7 +1,9 @@
 package ru.javawebinar.basejava.model;
 
+import com.google.gson.annotations.JsonAdapter;
 import ru.javawebinar.basejava.util.DateUtil;
-import ru.javawebinar.basejava.util.LocalDateAdapter;
+import ru.javawebinar.basejava.util.JsonLocalDateAdapter;
+import ru.javawebinar.basejava.util.XmlLocalDateAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -72,9 +74,11 @@ public class Company implements Serializable {
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class Period implements Serializable {
         private static final long serialVersionUID = 1L;
-        @XmlJavaTypeAdapter(LocalDateAdapter.class)
+        @JsonAdapter(JsonLocalDateAdapter.class)
+        @XmlJavaTypeAdapter(XmlLocalDateAdapter.class)
         private LocalDate startDate;
-        @XmlJavaTypeAdapter(LocalDateAdapter.class)
+        @JsonAdapter(JsonLocalDateAdapter.class)
+        @XmlJavaTypeAdapter(XmlLocalDateAdapter.class)
         private LocalDate endDate;
         private String title;
         private String description;
