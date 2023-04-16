@@ -114,7 +114,7 @@ public class Company implements Serializable {
         }
 
         public Period(int startMonth, int startYear, int endMonth, int endYear, String title) {
-            this(startMonth, startYear, endMonth, endYear, title, "");
+            this(startMonth, startYear, endMonth, endYear, title, null);
         }
 
         public LocalDate getStartDate() {

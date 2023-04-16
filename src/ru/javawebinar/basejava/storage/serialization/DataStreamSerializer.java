@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 public class DataStreamSerializer implements StreamSerializer {
+
+    private static final String NULL_HOLDER = "THIS_IS_NULL_HOLDER";
+
     @Override
     public void write(Resume resume, OutputStream outputStream) throws IOException {
         try (DataOutputStream dataOutputStream = new DataOutputStream(outputStream)) {
@@ -27,13 +30,12 @@ public class DataStreamSerializer implements StreamSerializer {
             for (Map.Entry<SectionType, AbstractSection> entry : sections.entrySet()) {
                 dataOutputStream.writeUTF(entry.getKey().name());
                 AbstractSection section = entry.getValue();
-                dataOutputStream.writeUTF(section.getClass().getSimpleName() + ".class");
-                switch (section.getClass().getSimpleName() + ".class") {
-                    case "TextSection.class" -> {
+                switch (entry.getKey()) {
+                    case OBJECTIVE, PERSONAL -> {
                         TextSection textSection = (TextSection) section;
                         dataOutputStream.writeUTF(textSection.getContent());
                     }
-                    case "ListSection.class" -> {
+                    case ACHIEVEMENT, QUALIFICATIONS -> {
                         ListSection listSection = (ListSection) section;
                         List<String> items = listSection.getItems();
                         dataOutputStream.writeInt(items.size());
@@ -41,26 +43,33 @@ public class DataStreamSerializer implements StreamSerializer {
                             dataOutputStream.writeUTF(item);
                         }
                     }
-                    case "CompanySection.class" -> {
+                    case EXPERIENCE, EDUCATION -> {
                         CompanySection companySection = (CompanySection) section;
                         List<Company> companies = companySection.getCompanies();
                         dataOutputStream.writeInt(companies.size());
                         for (Company company : companies) {
                             dataOutputStream.writeUTF(company.getHomepage().getName());
-                            dataOutputStream.writeUTF(company.getHomepage().getUrl());
-
+                            writeNull(company.getHomepage().getUrl(), dataOutputStream);
                             List<Company.Period> periods = company.getPeriods();
                             dataOutputStream.writeInt(periods.size());
                             for (Company.Period period : periods) {
                                 dataOutputStream.writeUTF(period.getStartDate().toString());
                                 dataOutputStream.writeUTF(period.getEndDate().toString());
                                 dataOutputStream.writeUTF(period.getTitle());
-                                dataOutputStream.writeUTF(period.getDescription());
+                                writeNull(period.getDescription(), dataOutputStream);
                             }
                         }
                     }
                 }
             }
+        }
+    }
+
+    private static void writeNull(String s, DataOutputStream dataOutputStream) throws IOException {
+        try {
+            dataOutputStream.writeUTF(s);
+        } catch (NullPointerException e) {
+            dataOutputStream.writeUTF(NULL_HOLDER);
         }
     }
 
@@ -75,11 +84,10 @@ public class DataStreamSerializer implements StreamSerializer {
             int sectionsSize = dataInputStream.readInt();
             for (int i = 0; i < sectionsSize; i++) {
                 SectionType sectionType = SectionType.valueOf(dataInputStream.readUTF());
-                switch (dataInputStream.readUTF()) {
-                    case "TextSection.class" -> {
-                        resume.addSection(sectionType, new TextSection(dataInputStream.readUTF()));
-                    }
-                    case "ListSection.class" -> {
+                switch (sectionType) {
+                    case OBJECTIVE, PERSONAL ->
+                            resume.addSection(sectionType, new TextSection(dataInputStream.readUTF()));
+                    case ACHIEVEMENT, QUALIFICATIONS -> {
                         List<String> textList = new ArrayList<>();
                         int textListSize = dataInputStream.readInt();
                         for (int j = 0; j < textListSize; j++) {
@@ -87,20 +95,20 @@ public class DataStreamSerializer implements StreamSerializer {
                         }
                         resume.addSection(sectionType, new ListSection(textList));
                     }
-                    case "CompanySection.class" -> {
+                    case EXPERIENCE, EDUCATION -> {
                         List<Company> companies = new ArrayList<>();
                         int companiesSize = dataInputStream.readInt();
                         for (int j = 0; j < companiesSize; j++) {
                             String name = dataInputStream.readUTF();
-                            String homepage = dataInputStream.readUTF();
+                            String url = readNull(dataInputStream);
                             List<Company.Period> periods = new ArrayList<>();
                             int periodsSize = dataInputStream.readInt();
                             for (int k = 0; k < periodsSize; k++) {
                                 periods.add(new Company.Period(getLocalDate(dataInputStream),
                                         getLocalDate(dataInputStream),
-                                        dataInputStream.readUTF(), dataInputStream.readUTF()));
+                                        dataInputStream.readUTF(), readNull(dataInputStream)));
                             }
-                            companies.add(new Company(new Link(name, homepage), periods));
+                            companies.add(new Company(new Link(name, url), periods));
                         }
                         resume.addSection(sectionType, new CompanySection(companies));
                     }
@@ -112,5 +120,14 @@ public class DataStreamSerializer implements StreamSerializer {
 
     private static LocalDate getLocalDate(DataInputStream dataInputStream) throws IOException {
         return LocalDate.parse(dataInputStream.readUTF());
+    }
+
+    private static String readNull(DataInputStream dataInputStream) throws IOException {
+        String s = dataInputStream.readUTF();
+        if (!s.equals(NULL_HOLDER)) {
+            return s;
+        } else {
+            return null;
+        }
     }
 }
