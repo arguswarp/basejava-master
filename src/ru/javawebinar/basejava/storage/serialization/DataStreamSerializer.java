@@ -5,8 +5,9 @@ import ru.javawebinar.basejava.model.*;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
 public class DataStreamSerializer implements StreamSerializer {
 
@@ -17,51 +18,33 @@ public class DataStreamSerializer implements StreamSerializer {
         try (DataOutputStream dataOutputStream = new DataOutputStream(outputStream)) {
             dataOutputStream.writeUTF(resume.getUuid());
             dataOutputStream.writeUTF(resume.getFullName());
+            writeWithException(resume.getContacts().entrySet(), dataOutputStream, contact -> {
+                dataOutputStream.writeUTF(contact.getKey().name());
+                dataOutputStream.writeUTF(contact.getValue());
+            });
+            writeWithException(resume.getSections().entrySet(), dataOutputStream, section -> {
+                dataOutputStream.writeUTF(section.getKey().name());
+                writeSection(section.getKey(), section.getValue(), dataOutputStream);
+            });
+        }
+    }
 
-            Map<ContactType, String> contacts = resume.getContacts();
-            dataOutputStream.writeInt(contacts.size());
-            for (Map.Entry<ContactType, String> entry : resume.getContacts().entrySet()) {
-                dataOutputStream.writeUTF(entry.getKey().name());
-                dataOutputStream.writeUTF(entry.getValue());
-            }
-
-            Map<SectionType, AbstractSection> sections = resume.getSections();
-            dataOutputStream.writeInt(sections.size());
-            for (Map.Entry<SectionType, AbstractSection> entry : sections.entrySet()) {
-                dataOutputStream.writeUTF(entry.getKey().name());
-                AbstractSection section = entry.getValue();
-                switch (entry.getKey()) {
-                    case OBJECTIVE, PERSONAL -> {
-                        TextSection textSection = (TextSection) section;
-                        dataOutputStream.writeUTF(textSection.getContent());
-                    }
-                    case ACHIEVEMENT, QUALIFICATIONS -> {
-                        ListSection listSection = (ListSection) section;
-                        List<String> items = listSection.getItems();
-                        dataOutputStream.writeInt(items.size());
-                        for (String item : items) {
-                            dataOutputStream.writeUTF(item);
-                        }
-                    }
-                    case EXPERIENCE, EDUCATION -> {
-                        CompanySection companySection = (CompanySection) section;
-                        List<Company> companies = companySection.getCompanies();
-                        dataOutputStream.writeInt(companies.size());
-                        for (Company company : companies) {
-                            dataOutputStream.writeUTF(company.getHomepage().getName());
-                            writeNull(company.getHomepage().getUrl(), dataOutputStream);
-                            List<Company.Period> periods = company.getPeriods();
-                            dataOutputStream.writeInt(periods.size());
-                            for (Company.Period period : periods) {
-                                dataOutputStream.writeUTF(period.getStartDate().toString());
-                                dataOutputStream.writeUTF(period.getEndDate().toString());
-                                dataOutputStream.writeUTF(period.getTitle());
-                                writeNull(period.getDescription(), dataOutputStream);
-                            }
-                        }
-                    }
-                }
-            }
+    private void writeSection(SectionType sectionType, AbstractSection section, DataOutputStream dataOutputStream) throws IOException {
+        switch (sectionType) {
+            case OBJECTIVE, PERSONAL -> dataOutputStream.writeUTF(((TextSection) section).getContent());
+            case ACHIEVEMENT, QUALIFICATIONS ->
+                    writeWithException(((ListSection) section).getItems(), dataOutputStream, dataOutputStream::writeUTF);
+            case EXPERIENCE, EDUCATION ->
+                    writeWithException(((CompanySection) section).getCompanies(), dataOutputStream, company -> {
+                        dataOutputStream.writeUTF(company.getHomepage().getName());
+                        writeNull(company.getHomepage().getUrl(), dataOutputStream);
+                        writeWithException(company.getPeriods(), dataOutputStream, period -> {
+                            dataOutputStream.writeUTF(period.getStartDate().toString());
+                            dataOutputStream.writeUTF(period.getEndDate().toString());
+                            dataOutputStream.writeUTF(period.getTitle());
+                            writeNull(period.getDescription(), dataOutputStream);
+                        });
+                    });
         }
     }
 
@@ -70,6 +53,16 @@ public class DataStreamSerializer implements StreamSerializer {
             dataOutputStream.writeUTF(s);
         } catch (NullPointerException e) {
             dataOutputStream.writeUTF(NULL_HOLDER);
+        }
+    }
+
+    private <T> void writeWithException(Collection<T> collection, DataOutputStream dataOutputStream, DataConsumer<T> action) throws IOException {
+        Objects.requireNonNull(collection);
+        Objects.requireNonNull(dataOutputStream);
+        Objects.requireNonNull(action);
+        dataOutputStream.writeInt(collection.size());
+        for (T t : collection) {
+            action.accept(t);
         }
     }
 
