@@ -1,5 +1,6 @@
 package ru.javawebinar.basejava.storage.serialization;
 
+import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.*;
 
 import java.io.*;
@@ -70,44 +71,45 @@ public class DataStreamSerializer implements StreamSerializer {
     public Resume read(InputStream inputStream) throws IOException {
         try (DataInputStream dataInputStream = new DataInputStream(inputStream)) {
             Resume resume = new Resume(dataInputStream.readUTF(), dataInputStream.readUTF());
-            int contactsSize = dataInputStream.readInt();
-            for (int i = 0; i < contactsSize; i++) {
-                resume.addContact(ContactType.valueOf(dataInputStream.readUTF()), dataInputStream.readUTF());
-            }
-            int sectionsSize = dataInputStream.readInt();
-            for (int i = 0; i < sectionsSize; i++) {
+            readWithException(dataInputStream, () -> resume.addContact(ContactType.valueOf(dataInputStream.readUTF()), dataInputStream.readUTF()));
+            readWithException(dataInputStream, () -> {
                 SectionType sectionType = SectionType.valueOf(dataInputStream.readUTF());
-                switch (sectionType) {
-                    case OBJECTIVE, PERSONAL ->
-                            resume.addSection(sectionType, new TextSection(dataInputStream.readUTF()));
-                    case ACHIEVEMENT, QUALIFICATIONS -> {
-                        List<String> textList = new ArrayList<>();
-                        int textListSize = dataInputStream.readInt();
-                        for (int j = 0; j < textListSize; j++) {
-                            textList.add(dataInputStream.readUTF());
-                        }
-                        resume.addSection(sectionType, new ListSection(textList));
-                    }
-                    case EXPERIENCE, EDUCATION -> {
-                        List<Company> companies = new ArrayList<>();
-                        int companiesSize = dataInputStream.readInt();
-                        for (int j = 0; j < companiesSize; j++) {
-                            String name = dataInputStream.readUTF();
-                            String url = readNull(dataInputStream);
-                            List<Company.Period> periods = new ArrayList<>();
-                            int periodsSize = dataInputStream.readInt();
-                            for (int k = 0; k < periodsSize; k++) {
-                                periods.add(new Company.Period(getLocalDate(dataInputStream),
-                                        getLocalDate(dataInputStream),
-                                        dataInputStream.readUTF(), readNull(dataInputStream)));
-                            }
-                            companies.add(new Company(new Link(name, url), periods));
-                        }
-                        resume.addSection(sectionType, new CompanySection(companies));
-                    }
-                }
-            }
+                resume.addSection(sectionType, readSection(sectionType, dataInputStream));
+            });
             return resume;
+        }
+    }
+
+    private AbstractSection readSection(SectionType sectionType, DataInputStream dataInputStream) throws IOException {
+        switch (sectionType) {
+            case OBJECTIVE, PERSONAL -> {
+                return new TextSection(dataInputStream.readUTF());
+            }
+            case ACHIEVEMENT, QUALIFICATIONS -> {
+                return new ListSection(readList(dataInputStream, dataInputStream::readUTF));
+            }
+            case EXPERIENCE, EDUCATION -> {
+                return new CompanySection(readList(dataInputStream, () -> new Company(new Link(dataInputStream.readUTF(), readNull(dataInputStream)),
+                        readList(dataInputStream, () -> new Company.Period(getLocalDate(dataInputStream), getLocalDate(dataInputStream),
+                                dataInputStream.readUTF(), readNull(dataInputStream))))));
+            }
+            default -> throw new StorageException("section read error");
+        }
+    }
+
+    private <T> List<T> readList(DataInputStream dataInputStream, DataSupplier<T> supplier) throws IOException {
+        int size = dataInputStream.readInt();
+        ArrayList<T> list = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            list.add(supplier.get());
+        }
+        return list;
+    }
+
+    private void readWithException(DataInputStream dataInputStream, DataProcessor processor) throws IOException {
+        int size = dataInputStream.readInt();
+        for (int i = 0; i < size; i++) {
+            processor.process();
         }
     }
 
