@@ -50,11 +50,7 @@ public class DataStreamSerializer implements StreamSerializer {
     }
 
     private static void writeNull(String s, DataOutputStream dataOutputStream) throws IOException {
-        try {
-            dataOutputStream.writeUTF(s);
-        } catch (NullPointerException e) {
-            dataOutputStream.writeUTF(NULL_HOLDER);
-        }
+        dataOutputStream.writeUTF(s != null ? s : NULL_HOLDER);
     }
 
     private <T> void writeWithException(Collection<T> collection, DataOutputStream dataOutputStream, DataConsumer<T> action) throws IOException {
