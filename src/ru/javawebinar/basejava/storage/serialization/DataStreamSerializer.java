@@ -53,13 +53,13 @@ public class DataStreamSerializer implements StreamSerializer {
         dataOutputStream.writeUTF(s != null ? s : NULL_HOLDER);
     }
 
-    private <T> void writeWithException(Collection<T> collection, DataOutputStream dataOutputStream, DataConsumer<T> action) throws IOException {
+    private <T> void writeWithException(Collection<T> collection, DataOutputStream dataOutputStream, DataConsumer<T> writer) throws IOException {
         Objects.requireNonNull(collection);
         Objects.requireNonNull(dataOutputStream);
-        Objects.requireNonNull(action);
+        Objects.requireNonNull(writer);
         dataOutputStream.writeInt(collection.size());
         for (T t : collection) {
-            action.accept(t);
+            writer.accept(t);
         }
     }
 
@@ -93,11 +93,11 @@ public class DataStreamSerializer implements StreamSerializer {
         }
     }
 
-    private <T> List<T> readList(DataInputStream dataInputStream, DataSupplier<T> supplier) throws IOException {
+    private <T> List<T> readList(DataInputStream dataInputStream, DataSupplier<T> reader) throws IOException {
         int size = dataInputStream.readInt();
         ArrayList<T> list = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            list.add(supplier.get());
+            list.add(reader.get());
         }
         return list;
     }
