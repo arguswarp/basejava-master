@@ -6,6 +6,7 @@ import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.sql.ConnectionFactory;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SqlStorage implements Storage{
@@ -56,21 +57,53 @@ public class SqlStorage implements Storage{
 
     @Override
     public void delete(String uuid) {
-
+        try(Connection connection = connectionFactory.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM resume r WHERE r.uuid = ?")) {
+            preparedStatement.setString(1, uuid);
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
     }
 
     @Override
     public void update(Resume resume) {
-
+        try(Connection connection = connectionFactory.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE resume SET full_name=? WHERE uuid = ?")) {
+            preparedStatement.setString(1, resume.getFullName());
+            preparedStatement.setString(2,resume.getUuid());
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
     }
 
     @Override
     public List<Resume> getAllSorted() {
-        return null;
+        List<Resume> list= new ArrayList<>();
+        try(Connection connection = connectionFactory.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT *FROM resume")) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (!resultSet.next()) {
+               list.add(new Resume(resultSet.getString("uuid"), resultSet.getString("full_name")));
+            }
+            return list;
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
     }
 
     @Override
     public int size() {
-        return 0;
+        try(Connection connection = connectionFactory.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT COUNT(*) FROM resume")) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(!resultSet.next()) {
+                return 0;
+            }
+            return resultSet.getInt("count");
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
     }
 }
