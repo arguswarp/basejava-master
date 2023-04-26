@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 public abstract class AbstractStorage<K> implements Storage {
     private static final Logger LOG = Logger.getLogger(AbstractStorage.class.getName());
-    private static final Comparator<Resume> COMPARATOR_RESUME = Comparator.comparing(Resume::getFullName).thenComparing(Resume::getUuid);
+    static final Comparator<Resume> COMPARATOR_RESUME = Comparator.comparing(Resume::getFullName).thenComparing(Resume::getUuid);
 
     @Override
     public final void save(Resume resume) {
