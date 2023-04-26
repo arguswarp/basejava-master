@@ -19,7 +19,7 @@ public class SortedArrayStorage extends AbstractArrayStorage {
     @Override
     protected void doDelete(Integer searchKey) {
         int numMoved = size - searchKey - 1;
-        if (numMoved > 0) {
+        if (numMoved >= 0) {
             System.arraycopy(storage, searchKey + 1, storage, searchKey, numMoved);
             size--;
         }

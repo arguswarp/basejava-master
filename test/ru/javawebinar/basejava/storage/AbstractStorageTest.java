@@ -1,8 +1,6 @@
 package ru.javawebinar.basejava.storage;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import ru.javawebinar.basejava.Config;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
@@ -12,23 +10,21 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static ru.javawebinar.basejava.model.ResumeTestData.createFilledResume;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public abstract class AbstractStorageTest {
 
     protected static final File STORAGE_DIR = Config.get().getStorageDir();
 
-    protected static final String DB_URL = Config.get().getDbUrl();
-    protected static final String DB_USER = Config.get().getDbUser();
-    protected static final String DB_PASSWORD = Config.get().getDbPassword();
-
     protected final Storage storage;
-    private static final String UUID_1 = "uuid1";
-    private static final String UUID_2 = "uuid2";
-    private static final String UUID_3 = "uuid3";
-    private static final String UUID_SAVED = "saved";
+    private static final String UUID_1 = String.valueOf(UUID.randomUUID());
+    private static final String UUID_2 = String.valueOf(UUID.randomUUID());
+    private static final String UUID_3 = String.valueOf(UUID.randomUUID());
+    private static final String UUID_SAVED = String.valueOf(UUID.randomUUID());
     private static final String UUID_NOT_EXIST = "dummy";
     private static final String FULL_NAME_1 = "Ivanov Ivan Ivanovich";
     private static final String FULL_NAME_2 = "John Doe";
@@ -52,6 +48,7 @@ public abstract class AbstractStorageTest {
     }
 
     @Test
+    @Order(1)
     public void clear() {
         storage.clear();
         assertSize(0);

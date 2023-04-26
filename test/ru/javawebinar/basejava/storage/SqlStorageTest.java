@@ -1,16 +1,12 @@
 package ru.javawebinar.basejava.storage;
 
 import org.junit.jupiter.api.Disabled;
+import ru.javawebinar.basejava.Config;
 
 class SqlStorageTest extends AbstractStorageTest {
 
     protected SqlStorageTest() {
-        super(new SqlStorage(DB_URL, DB_USER, DB_PASSWORD));
-    }
-
-    @Override
-    @Disabled
-    public void saveExist() {
+        super(Config.get().getStorage());
     }
 
     @Override
