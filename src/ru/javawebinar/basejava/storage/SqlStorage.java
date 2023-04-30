@@ -85,10 +85,7 @@ public class SqlStorage implements Storage {
         return sqlHelper.execute("SELECT COUNT(*) FROM resume",
                 preparedStatement -> {
                     ResultSet resultSet = preparedStatement.executeQuery();
-                    if (!resultSet.next()) {
-                        return 0;
-                    }
-                    return resultSet.getInt("count");
+                    return resultSet.next() ? resultSet.getInt("count") : 0;
                 });
     }
 }
