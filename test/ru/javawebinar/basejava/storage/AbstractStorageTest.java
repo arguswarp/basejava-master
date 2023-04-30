@@ -25,7 +25,7 @@ public abstract class AbstractStorageTest {
     private static final String UUID_2 = String.valueOf(UUID.randomUUID());
     private static final String UUID_3 = String.valueOf(UUID.randomUUID());
     private static final String UUID_SAVED = String.valueOf(UUID.randomUUID());
-    private static final String UUID_NOT_EXIST = "dummy";
+    private static final String UUID_NOT_EXIST = String.valueOf(UUID.randomUUID());
     private static final String FULL_NAME_1 = "Ivanov Ivan Ivanovich";
     private static final String FULL_NAME_2 = "John Doe";
     private static final String FULL_NAME_3 = "Joseph Joestar";

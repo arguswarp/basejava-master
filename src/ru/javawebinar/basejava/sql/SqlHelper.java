@@ -16,9 +16,9 @@ public class SqlHelper {
         this.connectionFactory = connectionFactory;
     }
 
-    public <T> T execute(String sql, Statement<T> statement) {
+    public <T> T execute(String sql, StatementExecutor<T> statementExecutor) {
         try (Connection connection = connectionFactory.getConnection()) {
-            return statement.execute(connection.prepareStatement(sql));
+            return statementExecutor.execute(connection.prepareStatement(sql));
         } catch (SQLException e) {
             if (Objects.equals(e.getSQLState(), DUPLICATE_ERROR_STATE)) {
                 throw new ExistStorageException(null);
@@ -28,7 +28,11 @@ public class SqlHelper {
         }
     }
 
-    public interface Statement<T> {
+    public void execute(String sql) {
+        execute(sql, PreparedStatement::execute);
+    }
+
+    public interface StatementExecutor<T> {
         T execute(PreparedStatement statement) throws SQLException;
     }
 }
