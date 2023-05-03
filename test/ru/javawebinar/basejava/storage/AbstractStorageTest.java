@@ -4,6 +4,7 @@ import org.junit.jupiter.api.*;
 import ru.javawebinar.basejava.Config;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
+import ru.javawebinar.basejava.model.ContactType;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.io.File;
@@ -104,6 +105,13 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void update() {
+        RESUME_3.addContact(ContactType.MAIL,"testmail@mail.com");
+        storage.update(RESUME_3);
+        assertEquals(RESUME_3, storage.get(UUID_3));
+        RESUME_3.getContacts().remove((ContactType.MAIL));
+        storage.update(RESUME_3);
+        assertEquals(RESUME_3, storage.get(UUID_3));
+        RESUME_3.getContacts().clear();
         storage.update(RESUME_3);
         assertEquals(RESUME_3, storage.get(UUID_3));
     }
