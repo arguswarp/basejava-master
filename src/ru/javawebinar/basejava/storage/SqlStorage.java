@@ -23,20 +23,20 @@ public class SqlStorage implements Storage {
     @Override
     public void save(Resume resume) {
         sqlHelper.transactionalExecute(connection -> {
-            executeSave(resume, connection,
-                    "INSERT INTO resume (uuid, full_name) VALUES (?,?)",
-                    preparedStatement1 -> {
-                        preparedStatement1.setString(1, resume.getUuid());
-                        preparedStatement1.setString(2, resume.getFullName());
-                        preparedStatement1.execute();
-                        return null;
-                    },
-                    "INSERT INTO contact (resume_uuid, type, value) VALUES (?,?,?)",
-                    (preparedStatement2, entry) -> {
-                        preparedStatement2.setString(1, resume.getUuid());
-                        preparedStatement2.setString(2, entry.getKey().name());
-                        preparedStatement2.setString(3, entry.getValue());
-                    });
+            try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO resume (uuid, full_name) VALUES (?,?)")) {
+                preparedStatement.setString(1, resume.getUuid());
+                preparedStatement.setString(2, resume.getFullName());
+                preparedStatement.execute();
+            }
+            try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO contact (resume_uuid, type, value) VALUES (?,?,?)")) {
+                for (Map.Entry<ContactType, String> entry : resume.getContacts().entrySet()) {
+                    preparedStatement.setString(1, resume.getUuid());
+                    preparedStatement.setString(2, entry.getKey().name());
+                    preparedStatement.setString(3, entry.getValue());
+                    preparedStatement.addBatch();
+                }
+                preparedStatement.executeBatch();
+            }
             return null;
         });
     }
@@ -57,8 +57,8 @@ public class SqlStorage implements Storage {
                     Resume resume = new Resume(uuid, resultSet.getString("full_name"));
                     do {
                         String value = resultSet.getString("value");
-                        ContactType type = ContactType.valueOf(resultSet.getString("type"));
-                        resume.addContact(type, value);
+                        Optional.ofNullable(resultSet.getString("type"))
+                                .ifPresent(contactType -> resume.addContact(ContactType.valueOf(contactType), value));
                     } while (resultSet.next());
 
                     return resume;
@@ -80,43 +80,24 @@ public class SqlStorage implements Storage {
     @Override
     public void update(Resume resume) {
         sqlHelper.transactionalExecute(connection -> {
-            executeSave(resume, connection,
-                    "UPDATE resume SET full_name=? WHERE uuid = ?",
-                    preparedStatement1 -> {
-                        preparedStatement1.setString(1, resume.getFullName());
-                        preparedStatement1.setString(2, resume.getUuid());
-                        if (preparedStatement1.executeUpdate() == 0) {
-                            throw new NotExistStorageException(resume.getUuid());
-                        }
-                        return null;
-                    },
-                    "UPDATE contact SET value=? WHERE type=? AND resume_uuid=?",
-                    (preparedStatement2, entry) -> {
-                        preparedStatement2.setString(1, entry.getValue());
-                        preparedStatement2.setString(2, entry.getKey().name());
-                        preparedStatement2.setString(3, resume.getUuid());
-                    });
+            try (PreparedStatement preparedStatement = connection.prepareStatement("UPDATE resume SET full_name=? WHERE uuid = ?")) {
+                preparedStatement.setString(1, resume.getFullName());
+                preparedStatement.setString(2, resume.getUuid());
+                if (preparedStatement.executeUpdate() == 0) {
+                    throw new NotExistStorageException(resume.getUuid());
+                }
+            }
+            try (PreparedStatement preparedStatement = connection.prepareStatement("UPDATE contact c SET value=? WHERE type=? AND resume_uuid=?")) {
+                for (Map.Entry<ContactType, String> entry : resume.getContacts().entrySet()) {
+                    preparedStatement.setString(1, entry.getValue());
+                    preparedStatement.setString(2, entry.getKey().name());
+                    preparedStatement.setString(3, resume.getUuid());
+                    preparedStatement.addBatch();
+                }
+                preparedStatement.executeBatch();
+            }
             return null;
         });
-    }
-
-    private <T> void executeSave(Resume resume, Connection connection,
-                                 String sql1, SqlHelper.StatementExecutor<T> executor1,
-                                 String sql2, SqlEntryExecutor<ContactType, String> executor2) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql1)) {
-            executor1.execute(preparedStatement);
-        }
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql2)) {
-            for (Map.Entry<ContactType, String> entry : resume.getContacts().entrySet()) {
-                executor2.execute(preparedStatement, entry);
-                preparedStatement.addBatch();
-            }
-            preparedStatement.executeBatch();
-        }
-    }
-
-    private interface SqlEntryExecutor<K, V> {
-        void execute(PreparedStatement preparedStatement, Map.Entry<K, V> entry) throws SQLException;
     }
 
     @Override
@@ -131,7 +112,10 @@ public class SqlStorage implements Storage {
             while (resultSet.next()) {
                 String key = resultSet.getString("uuid");
                 map.putIfAbsent(key, new Resume(key, resultSet.getString("full_name")));
-                map.get(key).addContact(ContactType.valueOf(resultSet.getString("type")), resultSet.getString("value"));
+                Optional<String> typeOptional = Optional.ofNullable(resultSet.getString("type"));
+                if (typeOptional.isPresent()) {
+                    map.get(key).addContact(ContactType.valueOf(typeOptional.get()), resultSet.getString("value"));
+                }
             }
             return map.values().stream().toList();
         });
