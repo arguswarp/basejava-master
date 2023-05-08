@@ -6,10 +6,7 @@ import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.sql.SqlHelper;
 
 import java.sql.*;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class SqlStorage implements Storage {
     public final SqlHelper sqlHelper;
@@ -88,17 +85,21 @@ public class SqlStorage implements Storage {
 
     @Override
     public List<Resume> getAllSorted() {
-        return sqlHelper.execute("" +
-                "SELECT * FROM resume " +
-                "Left JOIN contact c " +
-                "ON resume.uuid = c.resume_uuid " +
-                "ORDER BY full_name, uuid", preparedStatement -> {
+        return sqlHelper.transactionalExecute(connection -> {
             Map<String, Resume> map = new LinkedHashMap<>();
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                String key = resultSet.getString("uuid");
-                map.putIfAbsent(key, new Resume(key, resultSet.getString("full_name")));
-                addContact(resultSet, map.get(key));
+            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM resume ORDER BY full_name, uuid")) {
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    String key = resultSet.getString("uuid");
+                    map.putIfAbsent(key, new Resume(key, resultSet.getString("full_name")));
+                }
+            }
+            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM contact")) {
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    Resume resume = map.get(resultSet.getString("resume_uuid"));
+                    addContact(resultSet, resume);
+                }
             }
             return map.values().stream().toList();
         });
