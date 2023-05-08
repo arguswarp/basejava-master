@@ -5,10 +5,7 @@ import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.sql.SqlHelper;
 
 import java.sql.*;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class SqlStorage implements Storage {
     public final SqlHelper sqlHelper;
@@ -167,7 +164,6 @@ public class SqlStorage implements Storage {
 
     private void insertSections(Resume resume, Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO section (resume_uuid, type, value) VALUES (?,?,?)")) {
-
             for (Map.Entry<SectionType, AbstractSection> entry : resume.getSections().entrySet()) {
                 preparedStatement.setString(1, resume.getUuid());
                 preparedStatement.setString(2, entry.getKey().name());
@@ -178,7 +174,8 @@ public class SqlStorage implements Storage {
                         preparedStatement.setString(3, textSection.getContent());
                     }
                     case ACHIEVEMENT, QUALIFICATIONS -> {
-
+                        ListSection listSection = (ListSection) entry.getValue();
+                        preparedStatement.setString(3, String.join("\n", listSection.getItems()));
                     }
                 }
                 preparedStatement.addBatch();
@@ -201,9 +198,8 @@ public class SqlStorage implements Storage {
             switch (sectionType) {
                 case PERSONAL, OBJECTIVE ->
                         resume.addSection(sectionType, new TextSection(resultSet.getString("value")));
-                case ACHIEVEMENT, QUALIFICATIONS -> {
-
-                }
+                case ACHIEVEMENT, QUALIFICATIONS ->
+                        resume.addSection(sectionType, new ListSection(Arrays.asList(resultSet.getString("value").split("\n"))));
             }
         }
     }
