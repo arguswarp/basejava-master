@@ -102,7 +102,7 @@ public abstract class AbstractStorageTest {
     public void deleteNotExist() {
         assertThrows(NotExistStorageException.class, () -> storage.delete(UUID_NOT_EXIST));
     }
-
+//TODO: add cases for sections
     @Test
     public void update() {
         RESUME_3.addContact(ContactType.MAIL,"testmail@mail.com");
