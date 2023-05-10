@@ -26,7 +26,7 @@ public class SqlStorage implements Storage {
 
     @Override
     public void save(Resume resume) {
-        sqlHelper.transactionalExecute(connection -> {
+        sqlHelper.<Void>transactionalExecute(connection -> {
             try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO resume (uuid, full_name) VALUES (?,?)")) {
                 preparedStatement.setString(1, resume.getUuid());
                 preparedStatement.setString(2, resume.getFullName());
@@ -47,6 +47,7 @@ public class SqlStorage implements Storage {
                     "SELECT * FROM resume r " +
                     "LEFT JOIN contact c " +
                     "ON  r.uuid = c.resume_uuid " +
+                    "LEFT JOIN section s on r.uuid = s.resume_uuid " +
                     "WHERE r.uuid=?")) {
                 preparedStatement.setString(1, uuid);
                 ResultSet resultSet = preparedStatement.executeQuery();
@@ -56,18 +57,8 @@ public class SqlStorage implements Storage {
                 resume = new Resume(uuid, resultSet.getString("full_name"));
                 do {
                     addContact(resultSet, resume);
-                } while (resultSet.next());
-            }
-            try (PreparedStatement preparedStatement = connection.prepareStatement("" +
-                    "SELECT * FROM resume r " +
-                    "LEFT JOIN section s " +
-                    "ON  r.uuid = s.resume_uuid " +
-                    "WHERE r.uuid=?")) {
-                preparedStatement.setString(1, uuid);
-                ResultSet resultSet = preparedStatement.executeQuery();
-                while (resultSet.next()) {
                     addSection(resultSet, resume);
-                }
+                } while (resultSet.next());
             }
             return resume;
         });
@@ -87,7 +78,7 @@ public class SqlStorage implements Storage {
 
     @Override
     public void update(Resume resume) {
-        sqlHelper.transactionalExecute(connection -> {
+        sqlHelper.<Void>transactionalExecute(connection -> {
             try (PreparedStatement preparedStatement = connection.prepareStatement("UPDATE resume SET full_name=? WHERE uuid = ?")) {
                 preparedStatement.setString(1, resume.getFullName());
                 preparedStatement.setString(2, resume.getUuid());
@@ -129,7 +120,7 @@ public class SqlStorage implements Storage {
                     addSection(resultSet, resume);
                 }
             }
-            return map.values().stream().toList();
+            return new ArrayList<>(map.values());
         });
     }
 
@@ -143,7 +134,7 @@ public class SqlStorage implements Storage {
     }
 
     private void insertContacts(Resume resume, Connection connection) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO contact (resume_uuid, type, value) VALUES (?,?,?)")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO contact (resume_uuid, contact_type, contact_value) VALUES (?,?,?)")) {
             for (Map.Entry<ContactType, String> entry : resume.getContacts().entrySet()) {
                 preparedStatement.setString(1, resume.getUuid());
                 preparedStatement.setString(2, entry.getKey().name());
@@ -162,13 +153,13 @@ public class SqlStorage implements Storage {
     }
 
     private void addContact(ResultSet resultSet, Resume resume) throws SQLException {
-        String value = resultSet.getString("value");
-        Optional.ofNullable(resultSet.getString("type"))
+        String value = resultSet.getString("contact_value");
+        Optional.ofNullable(resultSet.getString("contact_type"))
                 .ifPresent(contactType -> resume.addContact(ContactType.valueOf(contactType), value));
     }
 
     private void insertSections(Resume resume, Connection connection) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO section (resume_uuid, type, value) VALUES (?,?,?)")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO section (resume_uuid, section_type, section_value) VALUES (?,?,?)")) {
             for (Map.Entry<SectionType, AbstractSection> entry : resume.getSections().entrySet()) {
                 preparedStatement.setString(1, resume.getUuid());
                 preparedStatement.setString(2, entry.getKey().name());
@@ -197,14 +188,14 @@ public class SqlStorage implements Storage {
     }
 
     private void addSection(ResultSet resultSet, Resume resume) throws SQLException {
-        Optional<String> type = Optional.ofNullable(resultSet.getString("type"));
+        Optional<String> type = Optional.ofNullable(resultSet.getString("section_type"));
         if (type.isPresent()) {
             SectionType sectionType = SectionType.valueOf(type.get());
             switch (sectionType) {
                 case PERSONAL, OBJECTIVE ->
-                        resume.addSection(sectionType, new TextSection(resultSet.getString("value")));
+                        resume.addSection(sectionType, new TextSection(resultSet.getString("section_value")));
                 case ACHIEVEMENT, QUALIFICATIONS ->
-                        resume.addSection(sectionType, new ListSection(Arrays.asList(resultSet.getString("value").split("\n"))));
+                        resume.addSection(sectionType, new ListSection(Arrays.asList(resultSet.getString("section_value").split("\n"))));
             }
         }
     }
