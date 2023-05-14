@@ -3,12 +3,15 @@ package ru.javawebinar.basejava.storage;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.sql.SqlHelper;
+import ru.javawebinar.basejava.util.JsonParser;
 
 import java.sql.*;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class SqlStorage implements Storage {
     public final SqlHelper sqlHelper;
+    private static final Logger LOG = Logger.getLogger(SqlStorage.class.getName());
 
     public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
         try {
@@ -34,6 +37,7 @@ public class SqlStorage implements Storage {
             }
             insertContacts(resume, connection);
             insertSections(resume, connection);
+            LOG.info("Save " + resume);
             return null;
         });
 
@@ -60,6 +64,7 @@ public class SqlStorage implements Storage {
                     addSection(resultSet, resume);
                 } while (resultSet.next());
             }
+            LOG.info("Get " + uuid);
             return resume;
         });
     }
@@ -72,6 +77,7 @@ public class SqlStorage implements Storage {
                     if (preparedStatement.executeUpdate() == 0) {
                         throw new NotExistStorageException(uuid);
                     }
+                    LOG.info("Delete " + uuid);
                     return null;
                 });
     }
@@ -90,6 +96,7 @@ public class SqlStorage implements Storage {
             insertContacts(resume, connection);
             deleteSections(resume, connection);
             insertSections(resume, connection);
+            LOG.info("Update " + resume);
             return null;
         });
     }
@@ -163,17 +170,19 @@ public class SqlStorage implements Storage {
             for (Map.Entry<SectionType, AbstractSection> entry : resume.getSections().entrySet()) {
                 preparedStatement.setString(1, resume.getUuid());
                 preparedStatement.setString(2, entry.getKey().name());
-                SectionType section = entry.getKey();
-                switch (section) {
-                    case PERSONAL, OBJECTIVE -> {
-                        TextSection textSection = (TextSection) entry.getValue();
-                        preparedStatement.setString(3, textSection.getContent());
-                    }
-                    case ACHIEVEMENT, QUALIFICATIONS -> {
-                        ListSection listSection = (ListSection) entry.getValue();
-                        preparedStatement.setString(3, String.join("\n", listSection.getItems()));
-                    }
-                }
+//                SectionType section = entry.getKey();
+
+                preparedStatement.setString(3,JsonParser.write(entry.getValue(), AbstractSection.class));
+//                switch (section) {
+//                    case PERSONAL, OBJECTIVE -> {
+//                        TextSection textSection = (TextSection) entry.getValue();
+//                        preparedStatement.setString(3, textSection.getContent());
+//                    }
+//                    case ACHIEVEMENT, QUALIFICATIONS -> {
+//                        ListSection listSection = (ListSection) entry.getValue();
+//                        preparedStatement.setString(3, String.join("\n", listSection.getItems()));
+//                    }
+//                }
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();
@@ -191,12 +200,13 @@ public class SqlStorage implements Storage {
         Optional<String> type = Optional.ofNullable(resultSet.getString("section_type"));
         if (type.isPresent()) {
             SectionType sectionType = SectionType.valueOf(type.get());
-            switch (sectionType) {
-                case PERSONAL, OBJECTIVE ->
-                        resume.addSection(sectionType, new TextSection(resultSet.getString("section_value")));
-                case ACHIEVEMENT, QUALIFICATIONS ->
-                        resume.addSection(sectionType, new ListSection(Arrays.asList(resultSet.getString("section_value").split("\n"))));
-            }
+            resume.addSection(sectionType, JsonParser.read(resultSet.getString("section_value"), AbstractSection.class));
+//            switch (sectionType) {
+//                case PERSONAL, OBJECTIVE ->
+//                        resume.addSection(sectionType, new TextSection(resultSet.getString("section_value")));
+//                case ACHIEVEMENT, QUALIFICATIONS ->
+//                        resume.addSection(sectionType, new ListSection(Arrays.asList(resultSet.getString("section_value").split("\n"))));
+//            }
         }
     }
 }

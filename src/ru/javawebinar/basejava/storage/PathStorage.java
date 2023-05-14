@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static java.nio.file.StandardOpenOption.WRITE;
-
 public class PathStorage extends AbstractStorage<Path> {
 
     private final Path directory;
@@ -67,7 +65,7 @@ public class PathStorage extends AbstractStorage<Path> {
     @Override
     protected void doUpdate(Resume resume, Path path) {
         try {
-            doWrite(resume, new BufferedOutputStream(Files.newOutputStream(path, WRITE)));
+            doWrite(resume, new BufferedOutputStream(Files.newOutputStream(path)));
         } catch (IOException e) {
             throw new StorageException("path write error", path.getFileName().toString(), e);
         }
