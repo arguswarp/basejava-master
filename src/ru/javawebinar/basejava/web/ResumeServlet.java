@@ -9,11 +9,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 public class ResumeServlet extends HttpServlet {
 
-    private Storage storage;
+    private Storage storage; // = Config.get().getStorage();
 
 
     @Override
@@ -24,26 +23,8 @@ public class ResumeServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
-        response.setHeader("Content-Type", "text/html; charset=UTF-8");
-        PrintWriter printWriter = response.getWriter();
-        printWriter.write("<html>" +
-                "<style> table, th, td {border: 1px solid black}</style>" +
-                "<body>" +
-                "<table>" +
-                "<tr>" +
-                "<th>uuid</th>" +
-                "<th>full name</th>" +
-                "</tr>");
-        storage.getAllSorted().forEach(resume -> printWriter.write("<tr>" +
-                "<td>" + resume.getUuid() + "</td>" +
-                "<td>" + resume.getFullName() + "</td>" +
-                "</tr>"
-        ));
-        printWriter.write("</table>" +
-                "</body>" +
-                "</html>");
+        request.setAttribute("resumes", storage.getAllSorted());
+        request.getRequestDispatcher("/WEB-INF/jsp/list.jsp").forward(request, response);
     }
 
     @Override

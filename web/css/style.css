@@ -12,3 +12,16 @@ footer {
     padding: 5px 20px;
     margin: 20px 0;
 }
+
+table {
+    table-layout: fixed;
+    width: auto;
+    border-collapse: collapse;
+    /*border: solid 1px;*/
+}
+
+table th,
+td {
+    border: solid 2px;
+    padding: 8px;
+}

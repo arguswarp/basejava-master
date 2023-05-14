@@ -91,4 +91,8 @@ public class Resume implements Comparable<Resume>, Serializable {
     public int compareTo(Resume o) {
         return this.fullName.compareTo(o.fullName);
     }
+
+    public String getContact(ContactType mail) {
+        return contacts.get(mail);
+    }
 }
