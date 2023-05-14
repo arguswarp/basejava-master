@@ -29,7 +29,7 @@ public class ResumeTestData {
 
         resume.addContact(ContactType.PHONE, "+7(921) 855-0482");
         resume.addContact(ContactType.SKYPE, "skype:grigory.kislin");
-        resume.addContact(ContactType.MAIL, " gkislin@yandex.ru");
+        resume.addContact(ContactType.MAIL, "gkislin@yandex.ru");
         resume.addContact(ContactType.LINKEDIN, "https://www.linkedin.com/in/gkislin");
         resume.addContact(ContactType.GITHUB, "https://github.com/gkislin");
         resume.addContact(ContactType.STACKOVERFLOW, "https://stackoverflow.com/users/548473");
