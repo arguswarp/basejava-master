@@ -6,8 +6,24 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ResumeTestData {
+
+    public static final String UUID_1 = String.valueOf(UUID.randomUUID());
+    public static final String UUID_2 = String.valueOf(UUID.randomUUID());
+    public static final String UUID_3 = String.valueOf(UUID.randomUUID());
+    public static final String UUID_SAVED = String.valueOf(UUID.randomUUID());
+    public static final String UUID_NOT_EXIST = String.valueOf(UUID.randomUUID());
+    public static final String FULL_NAME_1 = "Ivanov Ivan Ivanovich";
+    public static final String FULL_NAME_2 = "John Doe";
+    public static final String FULL_NAME_3 = "Joseph Joestar";
+    public static final String FULL_NAME_SAVED = "Gandalf the Grey";
+    public static final Resume RESUME_1 = createFilledResume(UUID_1, FULL_NAME_1);
+    public static final Resume RESUME_2 = createFilledResume(UUID_2, FULL_NAME_2);
+    public static final Resume RESUME_3 = createFilledResume(UUID_3, FULL_NAME_3);
+    public static final Resume RESUME_SAVED = createFilledResume(UUID_SAVED, FULL_NAME_SAVED);
+
     public static Resume createFilledResume(String uuid, String name) {
         Resume resume = new Resume(uuid, name);
 
@@ -135,10 +151,5 @@ public class ResumeTestData {
 
     public static Company createCompany(String name, String url, Company.Period... periods) {
         return new Company(name, url, List.of(periods));
-    }
-
-    public static void main(String[] args) {
-        Resume resume = createFilledResume("123456789", "Григорий Кислин");
-        System.out.println(resume);
     }
 }
