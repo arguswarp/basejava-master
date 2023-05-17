@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class ResumeServlet extends HttpServlet {
 
-    private Storage storage; // = Config.get().getStorage();
+    protected Storage storage; // = Config.get().getStorage();
 
 
     @Override
@@ -38,6 +38,10 @@ public class ResumeServlet extends HttpServlet {
                 storage.delete(uuid);
                 response.sendRedirect("resume");
                 return;
+            case "add":
+                resume = new Resume("Enter name");
+                uuid = resume.getUuid();
+                storage.save(resume);
             case "view":
             case "edit":
                 resume = storage.get(uuid);
@@ -49,7 +53,6 @@ public class ResumeServlet extends HttpServlet {
         request.getRequestDispatcher(
                 ("view".equals(action) ? "/WEB-INF/jsp/view.jsp" : "/WEB-INF/jsp/edit.jsp")
         ).forward(request, response);
-
     }
 
     @Override
@@ -61,7 +64,7 @@ public class ResumeServlet extends HttpServlet {
         resume.setFullName(fullName);
         for (ContactType type : ContactType.values()) {
             String value = request.getParameter(type.name());
-            if (value!=null && value.trim().length()!=0) {
+            if (value != null && value.trim().length() != 0) {
                 resume.addContact(type, value);
             } else {
                 resume.getContacts().remove(type);

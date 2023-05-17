@@ -11,6 +11,7 @@
 
 <body>
 <jsp:include page="fragments/header.jsp"/>
+
 <section>
     <h2>${resume.fullName}&nbsp; <a href="resume?uuid=${resume.uuid}&action=edit"><img src="img/pencil.png"></a></h2>
     <p>
