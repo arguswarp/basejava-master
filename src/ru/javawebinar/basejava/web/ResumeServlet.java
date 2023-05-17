@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
 
 public class ResumeServlet extends HttpServlet {
 
@@ -39,9 +40,12 @@ public class ResumeServlet extends HttpServlet {
                 response.sendRedirect("resume");
                 return;
             case "add":
-                resume = new Resume("Enter name");
-                uuid = resume.getUuid();
-                storage.save(resume);
+                resume = new Resume();
+                request.setAttribute("resume", resume);
+                request.getRequestDispatcher(
+                        ("/WEB-INF/jsp/edit.jsp")
+                ).forward(request, response);
+                return;
             case "view":
             case "edit":
                 resume = storage.get(uuid);
@@ -60,7 +64,13 @@ public class ResumeServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String uuid = request.getParameter("uuid");
         String fullName = request.getParameter("fullName");
-        Resume resume = storage.get(uuid);
+        Resume resume;
+        if (Objects.equals(uuid, "")) {
+            resume = new Resume(fullName);
+            storage.save(resume);
+        } else {
+            resume = storage.get(uuid);
+        }
         resume.setFullName(fullName);
         for (ContactType type : ContactType.values()) {
             String value = request.getParameter(type.name());
