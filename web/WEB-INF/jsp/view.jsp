@@ -6,7 +6,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css" type="text/css">
     <jsp:useBean id="resume" type="ru.javawebinar.basejava.model.Resume" scope="request"/>
     <title>Резюме ${resume.fullName}</title>
 </head>
@@ -48,25 +48,38 @@
         </c:when>
 
         <c:when test="${type == 'EXPERIENCE' || type == 'EDUCATION'}">
+
             <c:forEach var="company" items="<%= ((CompanySection)sectionEntry.getValue()).getCompanies()%>">
                 <p>
-                <b>${company.homepage.name}</b>
-                <br/>
-                <a href="${company.homepage.url}">${company.homepage.url}</a>
-                <c:forEach var="period" items="${company.periods}">
-                    <p>
-                            ${DateUtil.dateFormat(period.startDate)} - ${DateUtil.dateFormat(period.endDate)}
-                        <b><em>${period.title}</em></b>
-                        <br/>
-                            ${period.description}
-                    </p>
-                </c:forEach>
+                <table class="table-two">
+
+                    <tr>
+                        <th></th>
+                        <th><b> <a href="${company.homepage.url}">${company.homepage.name}</a> </b></th>
+                    </tr>
+
+                    <c:forEach var="period" items="${company.periods}">
+                        <tr>
+                            <td>
+                                <span>${DateUtil.dateFormat(period.startDate)} - ${DateUtil.dateFormat(period.endDate)}</span>
+                            </td>
+                            <td>
+                                <span><b><em>${period.title}</em></b></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <span>${period.description}</span>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </table>
                 </p>
             </c:forEach>
         </c:when>
+
     </c:choose>
-
-
     </c:forEach>
     </p>
 </section>

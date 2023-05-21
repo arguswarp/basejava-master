@@ -10,6 +10,10 @@
 
 <body>
 <jsp:include page="fragments/header.jsp"/>
+<button type="button">
+    <a href="resume?action=add" style="text-decoration: none">Добавить резюме</a>
+</button>
+<br/>
 <section>
     <table>
         <tr>
@@ -28,10 +32,6 @@
             </tr>
         </c:forEach>
     </table>
-    <br>
-    <button type="submit">
-        <a href="resume?action=add" style="text-decoration: none">Add resume</a>
-    </button>
 </section>
 <jsp:include page="fragments/footer.jsp"/>
 </body>

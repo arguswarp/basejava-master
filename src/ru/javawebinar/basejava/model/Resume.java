@@ -99,4 +99,5 @@ public class Resume implements Comparable<Resume>, Serializable {
     public String getContact(ContactType mail) {
         return contacts.get(mail);
     }
+
 }
