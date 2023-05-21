@@ -35,7 +35,7 @@ public class HtmlUtil {
                         message.append(period.getStartDate()).append(" - ").append(period.getEndDate())
                                 .append(" ")
                                 .append(period.getTitle())
-                                .append(description.map(s ->"</br>" ).orElse(""))
+                                .append(description.map(s -> "</br>").orElse(""))
                                 .append(description.orElse(""))
                                 .append("</br>");
                     });
@@ -44,5 +44,11 @@ public class HtmlUtil {
             default -> throw new IllegalStateException("Section type is invalid");
         }
         return "<b>" + type.getTitle() + "</b>" + ":" + message;
+    }
+
+    public static String textSectionToHtml(AbstractSection section) {
+        TextSection textSection = new TextSection();
+        textSection = (TextSection) section;
+        return textSection.getContent();
     }
 }
