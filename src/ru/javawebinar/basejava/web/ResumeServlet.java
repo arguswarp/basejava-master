@@ -40,11 +40,7 @@ public class ResumeServlet extends HttpServlet {
                 response.sendRedirect("resume");
                 return;
             case "add":
-                resume = new Resume();
-                request.setAttribute("resume", resume);
-                request.getRequestDispatcher(
-                        ("/WEB-INF/jsp/edit.jsp")
-                ).forward(request, response);
+                forwardToEdit(request, response);
                 return;
             case "view":
             case "edit":
@@ -59,12 +55,24 @@ public class ResumeServlet extends HttpServlet {
         ).forward(request, response);
     }
 
+    private static void forwardToEdit(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Resume resume = new Resume();
+        request.setAttribute("resume", resume);
+        request.getRequestDispatcher(
+                ("/WEB-INF/jsp/edit.jsp")
+        ).forward(request, response);
+    }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String uuid = request.getParameter("uuid");
         String fullName = request.getParameter("fullName");
         Resume resume;
+        if (fullName==null || fullName.trim().equals("")) {
+            forwardToEdit(request, response);
+            return;
+        }
         if (Objects.equals(uuid, "")) {
             resume = new Resume(fullName);
             storage.save(resume);
@@ -80,16 +88,16 @@ public class ResumeServlet extends HttpServlet {
                 resume.getContacts().remove(type);
             }
         }
-        for (SectionType type :SectionType.values() ) {
+        for (SectionType type : SectionType.values()) {
             String value = request.getParameter(type.name());
             if (value != null && value.trim().length() != 0) {
                 switch (type) {
-                    case OBJECTIVE,PERSONAL -> resume.addSection(type, new TextSection(value));
-                    case ACHIEVEMENT, QUALIFICATIONS -> resume.addSection(type, new ListSection(Arrays.asList(value.split("\n"))));
+                    case OBJECTIVE, PERSONAL -> resume.addSection(type, new TextSection(value));
+                    case ACHIEVEMENT, QUALIFICATIONS ->
+                            resume.addSection(type, new ListSection(Arrays.asList(value.split("\n"))));
                 }
-
             } else {
-                resume.getContacts().remove(type);
+                resume.getSections().remove(type);
             }
         }
         storage.update(resume);

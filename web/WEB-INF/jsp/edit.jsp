@@ -34,20 +34,29 @@
         <p>
             <c:forEach var="sectionType" items="<%=SectionType.values()%>">
                 <jsp:useBean id="sectionType" type="ru.javawebinar.basejava.model.SectionType"/>
-                <c:set var="section"
-                       value="<%=Optional.ofNullable(resume.getSections().get(sectionType)).orElse(new TextSection())%>"/>
+
         <p><b> ${sectionType.title}:</b></p>
         <c:choose>
             <c:when test="${sectionType == 'OBJECTIVE' || sectionType == 'PERSONAL'}">
-                <c:set var="content" value=""/>
-                <textarea name="${sectionType.name()}"
-                          id="content"><%=((TextSection) resume.getSections().get(sectionType)).getContent()%></textarea>
+                <c:if test="<%=resume.getSections().containsKey(sectionType)%>">
+                    <textarea name="${sectionType.name()}"
+                              id="content"><%=((TextSection) resume.getSections().get(sectionType)).getContent()%></textarea>
+                </c:if>
+                <c:if test="<%=!resume.getSections().containsKey(sectionType)%>">
+                     <textarea name="${sectionType.name()}"
+                               id="content"></textarea>
+                </c:if>
             </c:when>
 
             <c:when test="${sectionType == 'ACHIEVEMENT' || sectionType =='QUALIFICATIONS'}">
-                <c:set var="content" value=""/>
-                <textarea name="${sectionType.name()}"
-                          id="content"><%=String.join("\n", ((ListSection) resume.getSections().get(sectionType)).getItems())%></textarea>
+                <c:if test="<%=resume.getSections().containsKey(sectionType)%>">
+                    <textarea name="${sectionType.name()}"
+                              id="content"><%=String.join("\n", ((ListSection) resume.getSections().get(sectionType)).getItems())%></textarea>
+                </c:if>
+                <c:if test="<%=!resume.getSections().containsKey(sectionType)%>">
+                     <textarea name="${sectionType.name()}"
+                               id="content"></textarea>
+                </c:if>
             </c:when>
         </c:choose>
         </c:forEach>
