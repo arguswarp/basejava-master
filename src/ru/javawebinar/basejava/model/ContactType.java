@@ -17,10 +17,30 @@ public enum ContactType {
             return "<a href='skype:" + value + "'>" + value + "</a>";
         }
     },
-    LINKEDIN("Linkedin"),
-    GITHUB("Github"),
-    STACKOVERFLOW("Stackoverflow"),
-    PERSONAL_SITE("Личный сайт");
+    LINKEDIN("Linkedin"){
+        @Override
+        public String toHtml0(String value) {
+            return "<a href='" + value + "'>" + value + "</a>";
+        }
+    },
+    GITHUB("Github"){
+        @Override
+        public String toHtml0(String value) {
+            return "<a href='" + value + "'>" + value + "</a>";
+        }
+    },
+    STACKOVERFLOW("Stackoverflow"){
+        @Override
+        public String toHtml0(String value) {
+            return "<a href='" + value + "'>" + value + "</a>";
+        }
+    },
+    PERSONAL_SITE("Личный сайт"){
+        @Override
+        public String toHtml0(String value) {
+            return "<a href='" + value + "'>" + value + "</a>";
+        }
+    };
 
     private String title;
 

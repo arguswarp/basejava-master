@@ -1,40 +1,78 @@
 header {
-    background: none repeat scroll 0 0 #A6C9E2;
-    color: #2E6E9E;
+    background: none repeat scroll 0 0 darkgrey;
+    color: ghostwhite;
     font-size: 20px;
     padding: 5px 20px;
 }
 
 footer {
-    background: none repeat scroll 0 0 #A6C9E2;
-    color: #2E6E9E;
+    background: none repeat scroll 0 0 darkgrey;
+    color: ghostwhite;
     font-size: 20px;
     padding: 5px 20px;
     margin: 20px 0;
 }
 
-table{
+table {
+    margin-left: auto;
+    margin-right: auto;
     table-layout: auto;
+    background: #9c9c9c;
     width: fit-content;
-    border-collapse: collapse;
-    border: solid 1px;
+    border-radius: 10px;
+    display: block;
     empty-cells: hide;
+}
+
+a:link {
+    text-decoration: none;
+}
+
+a:visited {
+    text-decoration: none;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+}
+
+a:hover {
+    color: purple;
 }
 
 .table-two {
+    margin-left: 0;
     table-layout: fixed;
-    width: auto;
+    text-align: left;
     border-collapse: collapse;
     border: none;
-    place-content: center;
     empty-cells: hide;
+    background: none;
 
 }
 
+.th-td-two {
+    border: none;
+    width: 500px;
+}
+
+.th-td-date {
+    border: none;
+    width: 30%;
+}
 
 table th, td {
-    border: solid 1px;
+    border: none;
     padding: 8px;
+}
+
+.tr:nth-child(even) {
+    background-color: #d3d3d3;
+}
+
+.tr:hover {
+    background: thistle;
 }
 
 dl {
@@ -51,8 +89,10 @@ dt {
 dd {
     display: inline-block;
     width: auto;
-    /*margin-left: 8px;*/
     vertical-align: top;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
 }
 
 input {
@@ -60,10 +100,11 @@ input {
 }
 
 button {
-    background-color: #A6C9E2; /* Green */
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #d3d3d3;
     border: none;
-    color: black;
-    padding: 10px 20px;
+    padding: 10px 10px;
     text-align: center;
     text-decoration: none;
     display: block;
@@ -71,4 +112,8 @@ button {
     -webkit-border-radius: 15px;
     -moz-border-radius: 15px;
     border-radius: 15px;
+}
+
+button:hover {
+    background-color: darkgrey;
 }

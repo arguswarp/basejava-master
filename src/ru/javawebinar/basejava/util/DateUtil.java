@@ -13,9 +13,10 @@ public class DateUtil {
     }
 
     public static String dateFormat(LocalDate localDate) {
-        if (localDate.isEqual(LocalDate.now())) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy");
+        if (localDate.format(formatter).equals(LocalDate.now().format(formatter))) {
             return "Сейчас";
         }
-        return localDate.format(DateTimeFormatter.ofPattern("MM/yyyy"));
+        return localDate.format(formatter);
     }
 }

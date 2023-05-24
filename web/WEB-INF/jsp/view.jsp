@@ -54,22 +54,24 @@
                 <table class="table-two">
 
                     <tr>
-                        <th></th>
-                        <th><b> <a href="${company.homepage.url}">${company.homepage.name}</a> </b></th>
+                        <th class="th-td-date"></th>
+                        <th class="th-td-two"><b> <a style="font-size: 16pt"
+                                                     href="${company.homepage.url}">${company.homepage.name}</a> </b>
+                        </th>
                     </tr>
 
                     <c:forEach var="period" items="${company.periods}">
                         <tr>
-                            <td>
+                            <td class="th-td-date">
                                 <span>${DateUtil.dateFormat(period.startDate)} - ${DateUtil.dateFormat(period.endDate)}</span>
                             </td>
-                            <td>
+                            <td class="th-td-two">
                                 <span><b><em>${period.title}</em></b></span>
                             </td>
                         </tr>
                         <tr>
-                            <td></td>
-                            <td>
+                            <td class="th-td-date"></td>
+                            <td class="th-td-two">
                                 <span>${period.description}</span>
                             </td>
                         </tr>
