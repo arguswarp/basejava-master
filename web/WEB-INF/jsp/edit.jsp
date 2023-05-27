@@ -21,9 +21,10 @@
         <input type="hidden" name="uuid" value="${resume.uuid}">
         <dl>
             <dt>Имя:</dt>
-            <dd><input type="text" name="fullName" size="50" value="${resume.fullName}"></dd>
+            <dd><input name="fullName" type="text" pattern="^(?![' -])[a-zA-Zа-яА-ЯёЁ'-]{1,28}(?<![' -])(?:\s(?! )(?![ '-])\s*[a-zA-Zа-яА-ЯёЁ'-]{1,28}(?<![ '-]))*$" required size="30" value="${resume.fullName}"></dd>
         </dl>
-        <h3>Контакты:</h3>
+        <h3>Контакты:</h3
+
         <c:forEach var="type" items="<%=ContactType.values()%>">
             <dl>
                 <dt>${type.title}</dt>
@@ -39,22 +40,22 @@
         <c:choose>
             <c:when test="${sectionType == 'OBJECTIVE' || sectionType == 'PERSONAL'}">
                 <c:if test="<%=resume.getSections().containsKey(sectionType)%>">
-                    <textarea name="${sectionType.name()}"
+                    <textarea rows="6" cols="50" name="${sectionType.name()}"
                               id="content"><%=((TextSection) resume.getSections().get(sectionType)).getContent()%></textarea>
                 </c:if>
                 <c:if test="<%=!resume.getSections().containsKey(sectionType)%>">
-                     <textarea name="${sectionType.name()}"
+                     <textarea rows="6" cols="50" name="${sectionType.name()}"
                                id="content"></textarea>
                 </c:if>
             </c:when>
 
             <c:when test="${sectionType == 'ACHIEVEMENT' || sectionType =='QUALIFICATIONS'}">
                 <c:if test="<%=resume.getSections().containsKey(sectionType)%>">
-                    <textarea name="${sectionType.name()}"
+                    <textarea rows="6" cols="50" name="${sectionType.name()}"
                               id="content"><%=String.join("\n", ((ListSection) resume.getSections().get(sectionType)).getItems())%></textarea>
                 </c:if>
                 <c:if test="<%=!resume.getSections().containsKey(sectionType)%>">
-                     <textarea name="${sectionType.name()}"
+                     <textarea rows="6" cols="50" name="${sectionType.name()}"
                                id="content"></textarea>
                 </c:if>
             </c:when>

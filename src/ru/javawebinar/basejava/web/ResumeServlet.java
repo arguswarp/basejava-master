@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class ResumeServlet extends HttpServlet {
@@ -40,7 +41,11 @@ public class ResumeServlet extends HttpServlet {
                 response.sendRedirect("resume");
                 return;
             case "add":
-                forwardToEdit(request, response);
+                resume = new Resume();
+                request.setAttribute("resume", resume);
+                request.getRequestDispatcher(
+                        ("/WEB-INF/jsp/edit.jsp")
+                ).forward(request, response);
                 return;
             case "view":
             case "edit":
@@ -55,31 +60,19 @@ public class ResumeServlet extends HttpServlet {
         ).forward(request, response);
     }
 
-    private static void forwardToEdit(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Resume resume = new Resume();
-        request.setAttribute("resume", resume);
-        request.getRequestDispatcher(
-                ("/WEB-INF/jsp/edit.jsp")
-        ).forward(request, response);
-    }
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String uuid = request.getParameter("uuid");
         String fullName = request.getParameter("fullName");
         Resume resume;
-        if (fullName==null || fullName.trim().equals("")) {
-            forwardToEdit(request, response);
-            return;
-        }
         if (Objects.equals(uuid, "")) {
             resume = new Resume(fullName);
             storage.save(resume);
         } else {
             resume = storage.get(uuid);
+            resume.setFullName(fullName);
         }
-        resume.setFullName(fullName);
         for (ContactType type : ContactType.values()) {
             String value = request.getParameter(type.name());
             if (value != null && value.trim().length() != 0) {
@@ -93,8 +86,13 @@ public class ResumeServlet extends HttpServlet {
             if (value != null && value.trim().length() != 0) {
                 switch (type) {
                     case OBJECTIVE, PERSONAL -> resume.addSection(type, new TextSection(value));
-                    case ACHIEVEMENT, QUALIFICATIONS ->
-                            resume.addSection(type, new ListSection(Arrays.asList(value.split("\n"))));
+                    case ACHIEVEMENT, QUALIFICATIONS -> {
+                        List<String> list = Arrays.stream(value.replaceAll("\r", "")
+                                        .split("\n"))
+                                .filter(s -> !s.equals(""))
+                                .toList();
+                        resume.addSection(type, new ListSection(list));
+                    }
                 }
             } else {
                 resume.getSections().remove(type);
