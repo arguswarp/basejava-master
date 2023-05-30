@@ -1,8 +1,5 @@
-<%@ page import="ru.javawebinar.basejava.model.ContactType" %>
-<%@ page import="ru.javawebinar.basejava.model.ListSection" %>
-<%@ page import="ru.javawebinar.basejava.model.TextSection" %>
-<%@ page import="ru.javawebinar.basejava.model.SectionType" %>
 <%@ page import="java.util.Optional" %>
+<%@ page import="ru.javawebinar.basejava.model.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
@@ -21,7 +18,9 @@
         <input type="hidden" name="uuid" value="${resume.uuid}">
         <dl>
             <dt>Имя:</dt>
-            <dd><input name="fullName" type="text" pattern="^(?![' -])[a-zA-Zа-яА-ЯёЁ'-]{1,28}(?<![' -])(?:\s(?! )(?![ '-])\s*[a-zA-Zа-яА-ЯёЁ'-]{1,28}(?<![ '-]))*$" required size="30" value="${resume.fullName}"></dd>
+            <dd><input name="fullName" type="text"
+                       pattern="^(?![' -])[a-zA-Zа-яА-ЯёЁ'-]{1,28}(?<![' -])(?:\s(?! )(?![ '-])\s*[a-zA-Zа-яА-ЯёЁ'-]{1,28}(?<![ '-]))*$"
+                       required size="30" value="${resume.fullName}"></dd>
         </dl>
         <h3>Контакты:</h3
 
@@ -59,6 +58,36 @@
                                id="content"></textarea>
                 </c:if>
             </c:when>
+            <%--            TODO: add editable sections--%>
+            <c:when test="${sectionType == 'EXPERIENCE' || sectionType =='EDUCATION'}">
+                <c:if test="<%=resume.getSections().containsKey(sectionType)%>">
+                    <c:forEach var="company"
+                               items="<%=((CompanySection)resume.getSections().get(sectionType)).getCompanies()%>">
+                        <p>
+                            <input type="text" name="${company.homepage.name}" size="30" value="${company.homepage.name}">
+                            <input type="text" name="${company.homepage.url}" size="30" value="${company.homepage.url}">
+                        </p>
+                    </c:forEach>
+
+                </c:if>
+
+                <p>
+                    <span>Новая компания</span>
+                    <br/>
+                    <input type="text" name="${sectionType.name()}newCompanyName" size="30" value="Название">
+                    <input type="text" name="${sectionType.name()}newCompanyUrl" size="30" value="Сайт">
+                    <input type="text" name="${sectionType.name()}newCompanyPeriodStart" size="30" value="Начало работы">
+                    <input type="text" name="${sectionType.name()}newCompanyPeriodEnd" size="30" value="Конец работы">
+                    <input type="text" name="${sectionType.name()}newCompanyPeriodTitle" size="30" value="Должность">
+                </p>
+
+                <c:if test="<%=!resume.getSections().containsKey(sectionType)%>">
+                    <p>
+
+                    </p>
+                </c:if>
+            </c:when>
+
         </c:choose>
         </c:forEach>
         <hr>

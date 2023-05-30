@@ -3,6 +3,7 @@ package ru.javawebinar.basejava.web;
 import ru.javawebinar.basejava.Config;
 import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.storage.Storage;
+import ru.javawebinar.basejava.util.DateUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -83,6 +84,11 @@ public class ResumeServlet extends HttpServlet {
         }
         for (SectionType type : SectionType.values()) {
             String value = request.getParameter(type.name());
+            String newName = request.getParameter(type + "newCompanyName");
+            String newUrl = request.getParameter(type + "newCompanyUrl");
+            String startDate = request.getParameter(type + "newCompanyPeriodStart");
+            String endDate = request.getParameter(type + "newCompanyPeriodEnd");
+            String title = request.getParameter(type + "newCompanyPeriodTitle");
             if (value != null && value.trim().length() != 0) {
                 switch (type) {
                     case OBJECTIVE, PERSONAL -> resume.addSection(type, new TextSection(value));
@@ -93,8 +99,13 @@ public class ResumeServlet extends HttpServlet {
                                 .toList();
                         resume.addSection(type, new ListSection(list));
                     }
+                    case EXPERIENCE, EDUCATION -> {
+
+                        resume.addSection(type, new CompanySection(new Company(newName, newUrl, new Company.Period(DateUtil.of(startDate), DateUtil.of(endDate),title, ""))));
+                    }
                 }
-            } else {
+            }
+            else {
                 resume.getSections().remove(type);
             }
         }
