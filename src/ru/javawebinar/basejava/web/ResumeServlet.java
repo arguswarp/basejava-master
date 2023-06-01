@@ -11,9 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class ResumeServlet extends HttpServlet {
 
@@ -83,25 +81,43 @@ public class ResumeServlet extends HttpServlet {
             }
         }
         for (SectionType type : SectionType.values()) {
-            String value = request.getParameter(type.name());
-            String newName = request.getParameter(type + "newCompanyName");
-            String newUrl = request.getParameter(type + "newCompanyUrl");
-            String startDate = request.getParameter(type + "newCompanyPeriodStart");
-            String endDate = request.getParameter(type + "newCompanyPeriodEnd");
-            String title = request.getParameter(type + "newCompanyPeriodTitle");
-            if (value != null && value.trim().length() != 0) {
+            String[] value = request.getParameterValues(type.name());
+            String value0 = value[0];
+            if ((value0 != null && value0.trim().length() != 0)) {
                 switch (type) {
-                    case OBJECTIVE, PERSONAL -> resume.addSection(type, new TextSection(value));
+                    case OBJECTIVE, PERSONAL -> resume.addSection(type, new TextSection(value0));
                     case ACHIEVEMENT, QUALIFICATIONS -> {
-                        List<String> list = Arrays.stream(value.replaceAll("\r", "")
+                        List<String> list = Arrays.stream(value0.replaceAll("\r", "")
                                         .split("\n"))
                                 .filter(s -> !s.equals(""))
                                 .toList();
                         resume.addSection(type, new ListSection(list));
                     }
                     case EXPERIENCE, EDUCATION -> {
-
-                        resume.addSection(type, new CompanySection(new Company(newName, newUrl, new Company.Period(DateUtil.of(startDate), DateUtil.of(endDate),title, ""))));
+                        String newName = value[value.length - 1];
+                        String newUrl = request.getParameter(type + "newCompanyUrl");
+                        String startDate = request.getParameter(type + "newCompanyPeriodStart");
+                        String endDate = request.getParameter(type + "newCompanyPeriodEnd");
+                        String title = request.getParameter(type + "newCompanyPeriodTitle");
+                        String description = request.getParameter(type + "newCompanyPeriodDescription");
+                        List<Company> companyList = ((CompanySection) resume.getSections().get(type)).getCompanies();
+                        List<Company> updatedList = new ArrayList<>();
+                        int i = 0;
+                        for (Company company : companyList) {
+                            String oldName = company.getHomepage().getName();
+                            String updatedName = value[i++];
+                            String updatedUrl = request.getParameter(company.getHomepage().getUrl());
+                            String updatedStartDate = request.getParameter(oldName + "StartDate");
+                            String updatedEndDate = request.getParameter(oldName + "EndDate");
+                            String updatedTitle = request.getParameter(oldName + "Title");
+                            String updatedDescription = request.getParameter(oldName + "Description");
+                            Company updatedCompany = new Company(updatedName, updatedUrl, new Company.Period(DateUtil.of(updatedStartDate), DateUtil.of(updatedEndDate), updatedTitle, updatedDescription));
+                            updatedList.add(updatedCompany);
+                        }
+                        if (newName != null && newName.trim().length() != 0) {
+                            updatedList.add(new Company(newName, newUrl, new Company.Period(DateUtil.of(startDate), DateUtil.of(endDate), title, description)));
+                        }
+                        resume.addSection(type, new CompanySection(updatedList));
                     }
                 }
             }

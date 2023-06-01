@@ -1,4 +1,5 @@
 <%@ page import="java.util.Optional" %>
+<%@ page import="ru.javawebinar.basejava.util.DateUtil" %>
 <%@ page import="ru.javawebinar.basejava.model.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -61,29 +62,54 @@
             <%--            TODO: add editable sections--%>
             <c:when test="${sectionType == 'EXPERIENCE' || sectionType =='EDUCATION'}">
                 <c:if test="<%=resume.getSections().containsKey(sectionType)%>">
+
+                        <span>Добавить компанию:</span>
+                    <p>
+                        <input id="newName" type="text" name="${sectionType.name()}" size="66" placeholder="Название компании"> <br/>
+                        <input type="text" name="${sectionType.name()}newCompanyUrl" size="66" placeholder="Сcылка"> <br/>
+                        <input type="text" name="${sectionType.name()}newCompanyPeriodStart" size="30" placeholder="Начало работы">
+                        <input type="text" name="${sectionType.name()}newCompanyPeriodEnd" size="30" placeholder="Конец работы"> <br/>
+                        <input type="text" name="${sectionType.name()}newCompanyPeriodTitle" size="66" placeholder="Должность"> <br/>
+                        <input type="text" name="${sectionType.name()}newCompanyPeriodDescription" size="66" placeholder="Описание">
+                    </p>
+                    <hr/>
                     <c:forEach var="company"
                                items="<%=((CompanySection)resume.getSections().get(sectionType)).getCompanies()%>">
                         <p>
-                            <input type="text" name="${company.homepage.name}" size="30" value="${company.homepage.name}">
-                            <input type="text" name="${company.homepage.url}" size="30" value="${company.homepage.url}">
+                            <input type="text" name="${sectionType.name()}" size="66" value="${company.homepage.name}"> <br/>
+                            <input type="text" name="${company.homepage.url}" size="66" value="${company.homepage.url}"> <br/>
                         </p>
+
+                        <span>Добавить должность:</span>
+                        <p>
+                            <input type="text" name="${company.homepage.name}newPeriodStart" size="30" placeholder="Начало работы">
+                            <input type="text" name="${company.homepage.name}newPeriodEnd" size="30" placeholder="Конец работы"> <br/>
+                            <input type="text" name="${company.homepage.name}newPeriodTitle" size="66" placeholder="Должность"> <br/>
+                            <input type="text" name="${company.homepage.name}newPeriodDescription" size="66" placeholder="Описание">
+                        </p>
+                        <span>Редактировать должность:</span>
+                            <c:forEach var="companyPeriod" items="${company.periods}">
+                                <p>
+                                <input type="text" name="${companyPeriod.title}StartDate" size="30" value="${DateUtil.dateFormat(companyPeriod.startDate)}">
+                                <input type="text" name="${companyPeriod.title}EndDate" size="30" value="${DateUtil.dateFormat(companyPeriod.endDate)}"> <br/>
+                                <input type="text" name="${companyPeriod.title}Title" size="66" value="${companyPeriod.title}"> <br/>
+                                <input type="text" name="${companyPeriod.title}Description" size="66" value="${companyPeriod.description}">
+                                </p>
+                            </c:forEach>
+
                     </c:forEach>
 
                 </c:if>
 
-                <p>
-                    <span>Новая компания</span>
-                    <br/>
-                    <input type="text" name="${sectionType.name()}newCompanyName" size="30" value="Название">
-                    <input type="text" name="${sectionType.name()}newCompanyUrl" size="30" value="Сайт">
-                    <input type="text" name="${sectionType.name()}newCompanyPeriodStart" size="30" value="Начало работы">
-                    <input type="text" name="${sectionType.name()}newCompanyPeriodEnd" size="30" value="Конец работы">
-                    <input type="text" name="${sectionType.name()}newCompanyPeriodTitle" size="30" value="Должность">
-                </p>
-
                 <c:if test="<%=!resume.getSections().containsKey(sectionType)%>">
                     <p>
-
+                        <span>Новая компания</span>
+                        <br/>
+                        <input type="text" name="${sectionType.name()}" size="30" value="">
+                        <input type="text" name="${sectionType.name()}newCompanyUrl" size="30" value="Сайт">
+                        <input type="text" name="${sectionType.name()}newCompanyPeriodStart" size="30" value="Начало работы">
+                        <input type="text" name="${sectionType.name()}newCompanyPeriodEnd" size="30" value="Конец работы">
+                        <input type="text" name="${sectionType.name()}newCompanyPeriodTitle" size="30" value="Должность">
                     </p>
                 </c:if>
             </c:when>
