@@ -82,8 +82,9 @@ public class ResumeServlet extends HttpServlet {
         }
         for (SectionType type : SectionType.values()) {
             String[] value = request.getParameterValues(type.name());
-            String value0 = value[0];
-            if ((value0 != null && value0.trim().length() != 0)) {
+            String value0 = value != null ? value[0] : null;
+
+            if (value0 != null && value0.trim().length() != 0) {
                 switch (type) {
                     case OBJECTIVE, PERSONAL -> resume.addSection(type, new TextSection(value0));
                     case ACHIEVEMENT, QUALIFICATIONS -> {
@@ -94,29 +95,56 @@ public class ResumeServlet extends HttpServlet {
                         resume.addSection(type, new ListSection(list));
                     }
                     case EXPERIENCE, EDUCATION -> {
-                        String newName = value[value.length - 1];
+                        String newCompanyName = request.getParameter(type + "newCompanyName");
                         String newUrl = request.getParameter(type + "newCompanyUrl");
                         String startDate = request.getParameter(type + "newCompanyPeriodStart");
                         String endDate = request.getParameter(type + "newCompanyPeriodEnd");
                         String title = request.getParameter(type + "newCompanyPeriodTitle");
                         String description = request.getParameter(type + "newCompanyPeriodDescription");
-                        List<Company> companyList = ((CompanySection) resume.getSections().get(type)).getCompanies();
                         List<Company> updatedList = new ArrayList<>();
-                        int i = 0;
-                        for (Company company : companyList) {
-                            String oldName = company.getHomepage().getName();
-                            String updatedName = value[i++];
-                            String updatedUrl = request.getParameter(company.getHomepage().getUrl());
-                            String updatedStartDate = request.getParameter(oldName + "StartDate");
-                            String updatedEndDate = request.getParameter(oldName + "EndDate");
-                            String updatedTitle = request.getParameter(oldName + "Title");
-                            String updatedDescription = request.getParameter(oldName + "Description");
-                            Company updatedCompany = new Company(updatedName, updatedUrl, new Company.Period(DateUtil.of(updatedStartDate), DateUtil.of(updatedEndDate), updatedTitle, updatedDescription));
-                            updatedList.add(updatedCompany);
+                        if (resume.getSections().get(type) != null){
+                            List<Company> companyList = ((CompanySection) resume.getSections().get(type)).getCompanies();
+
+                            int i = 0;
+                            for (Company company : companyList) {
+
+                                String oldName = company.getHomepage().getName();
+
+                                String updatedName = value[i++];
+                                String updatedUrl = request.getParameter(company.getHomepage().getUrl());
+
+                                String newPeriodStart = request.getParameter(oldName + "newPeriodStart");
+                                String newPeriodEnd = request.getParameter(oldName + "newPeriodEnd");
+                                String newPeriodTitle = request.getParameter(oldName + "newPeriodTitle");
+                                String newPeriodDescription = request.getParameter(oldName + "newPeriodDescription");
+
+                                List<Company.Period> periods = new ArrayList<>();
+
+                                if (newPeriodTitle != null && newPeriodTitle.trim().length() != 0) {
+                                    Company.Period newPeriod = new Company.Period(DateUtil.of(newPeriodStart), DateUtil.of(newPeriodEnd), newPeriodTitle, newPeriodDescription);
+                                    periods.add(newPeriod);
+                                }
+                                for (Company.Period p : company.getPeriods()) {
+                                    String oldTitle = p.getTitle();
+
+                                    String updatedStartDate = request.getParameter(oldTitle + "StartDate");
+                                    String updatedEndDate = request.getParameter(oldTitle + "EndDate");
+                                    String updatedTitle = request.getParameter(oldTitle + "Title");
+                                    String updatedDescription = request.getParameter(oldTitle + "Description");
+
+                                    Company.Period updatedPeriod = new Company.Period(DateUtil.of(updatedStartDate), DateUtil.of(updatedEndDate), updatedTitle, updatedDescription);
+                                    periods.add(updatedPeriod);
+                                }
+                                Company updatedCompany = new Company(updatedName, updatedUrl, periods);
+                                updatedList.add(updatedCompany);
+                            }
                         }
-                        if (newName != null && newName.trim().length() != 0) {
-                            updatedList.add(new Company(newName, newUrl, new Company.Period(DateUtil.of(startDate), DateUtil.of(endDate), title, description)));
+                        if (newCompanyName != null && newCompanyName.trim().length() != 0) {
+                            updatedList.add(new Company(newCompanyName, newUrl, new Company.Period(DateUtil.of(startDate), DateUtil.of(endDate), title, description)));
+                        } else if (title!= null && title.trim().length() != 0){
+                            updatedList.add(new Company(value0, newUrl, new Company.Period(DateUtil.of(startDate), DateUtil.of(endDate), title, description)));
                         }
+                        Collections.reverse(updatedList);
                         resume.addSection(type, new CompanySection(updatedList));
                     }
                 }
