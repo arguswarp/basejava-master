@@ -84,7 +84,7 @@ public class ResumeServlet extends HttpServlet {
             String[] value = request.getParameterValues(type.name());
             String value0 = value != null ? value[0] : null;
 
-            if (value0 != null && value0.trim().length() != 0) {
+            if (isNotEmpty(value0)) {
                 switch (type) {
                     case OBJECTIVE, PERSONAL -> resume.addSection(type, new TextSection(value0));
                     case ACHIEVEMENT, QUALIFICATIONS -> {
@@ -101,10 +101,17 @@ public class ResumeServlet extends HttpServlet {
                         String endDate = request.getParameter(type + "newCompanyPeriodEnd");
                         String title = request.getParameter(type + "newCompanyPeriodTitle");
                         String description = request.getParameter(type + "newCompanyPeriodDescription");
-                        List<Company> updatedList = new ArrayList<>();
-                        if (resume.getSections().get(type) != null){
-                            List<Company> companyList = ((CompanySection) resume.getSections().get(type)).getCompanies();
 
+                        List<Company> updatedList = new ArrayList<>();
+
+                        if (isNotEmpty(newCompanyName)) {
+                            updatedList.add(new Company(newCompanyName, newUrl, new Company.Period(DateUtil.of(startDate), DateUtil.of(endDate), title, description)));
+                        } else if (isNotEmpty(title)) {
+                            updatedList.add(new Company(value0, newUrl, new Company.Period(DateUtil.of(startDate), DateUtil.of(endDate), title, description)));
+                        }
+
+                        if (resume.getSections().get(type) != null) {
+                            List<Company> companyList = ((CompanySection) resume.getSections().get(type)).getCompanies();
                             int i = 0;
                             for (Company company : companyList) {
 
@@ -120,9 +127,8 @@ public class ResumeServlet extends HttpServlet {
 
                                 List<Company.Period> periods = new ArrayList<>();
 
-                                if (newPeriodTitle != null && newPeriodTitle.trim().length() != 0) {
-                                    Company.Period newPeriod = new Company.Period(DateUtil.of(newPeriodStart), DateUtil.of(newPeriodEnd), newPeriodTitle, newPeriodDescription);
-                                    periods.add(newPeriod);
+                                if (isNotEmpty(newPeriodTitle)) {
+                                    periods.add(new Company.Period(DateUtil.of(newPeriodStart), DateUtil.of(newPeriodEnd), newPeriodTitle, newPeriodDescription));
                                 }
                                 for (Company.Period p : company.getPeriods()) {
                                     String oldTitle = p.getTitle();
@@ -132,28 +138,26 @@ public class ResumeServlet extends HttpServlet {
                                     String updatedTitle = request.getParameter(oldTitle + "Title");
                                     String updatedDescription = request.getParameter(oldTitle + "Description");
 
-                                    Company.Period updatedPeriod = new Company.Period(DateUtil.of(updatedStartDate), DateUtil.of(updatedEndDate), updatedTitle, updatedDescription);
-                                    periods.add(updatedPeriod);
+                                    periods.add(new Company.Period(DateUtil.of(updatedStartDate), DateUtil.of(updatedEndDate), updatedTitle, updatedDescription));
                                 }
                                 Company updatedCompany = new Company(updatedName, updatedUrl, periods);
                                 updatedList.add(updatedCompany);
                             }
                         }
-                        if (newCompanyName != null && newCompanyName.trim().length() != 0) {
-                            updatedList.add(new Company(newCompanyName, newUrl, new Company.Period(DateUtil.of(startDate), DateUtil.of(endDate), title, description)));
-                        } else if (title!= null && title.trim().length() != 0){
-                            updatedList.add(new Company(value0, newUrl, new Company.Period(DateUtil.of(startDate), DateUtil.of(endDate), title, description)));
-                        }
-                        Collections.reverse(updatedList);
                         resume.addSection(type, new CompanySection(updatedList));
                     }
                 }
-            }
-            else {
+            } else {
                 resume.getSections().remove(type);
             }
         }
         storage.update(resume);
         response.sendRedirect("resume");
     }
+
+    private boolean isNotEmpty(String s) {
+        return s != null && s.trim().length() != 0;
+    }
 }
+
+

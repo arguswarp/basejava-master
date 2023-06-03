@@ -25,7 +25,6 @@ public class Company implements Serializable {
 
     }
 
-
     public Company(Link homepage, List<Period> periods) {
         Objects.requireNonNull(homepage, "homepage must not be null");
         Objects.requireNonNull(periods, "periods must not be null");

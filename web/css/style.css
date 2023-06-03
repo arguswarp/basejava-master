@@ -19,6 +19,7 @@ table {
     table-layout: auto;
     background: #9c9c9c;
     width: fit-content;
+    border-collapse: collapse;
     border-radius: 10px;
     display: block;
     empty-cells: hide;

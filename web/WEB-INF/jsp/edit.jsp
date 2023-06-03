@@ -40,36 +40,40 @@
         <c:choose>
             <c:when test="${sectionType == 'OBJECTIVE' || sectionType == 'PERSONAL'}">
                 <c:if test="<%=resume.getSections().containsKey(sectionType)%>">
-                    <textarea rows="6" cols="50" name="${sectionType.name()}"
-                              id="content"><%=((TextSection) resume.getSections().get(sectionType)).getContent()%></textarea>
+                    <textarea rows="6" cols="50" name="${sectionType.name()}"><%=((TextSection) resume.getSections().get(sectionType)).getContent()%></textarea>
                 </c:if>
                 <c:if test="<%=!resume.getSections().containsKey(sectionType)%>">
-                     <textarea rows="6" cols="50" name="${sectionType.name()}"
-                               id="content"></textarea>
+                     <textarea rows="6" cols="50" name="${sectionType.name()}"></textarea>
                 </c:if>
             </c:when>
 
             <c:when test="${sectionType == 'ACHIEVEMENT' || sectionType =='QUALIFICATIONS'}">
                 <c:if test="<%=resume.getSections().containsKey(sectionType)%>">
-                    <textarea rows="6" cols="50" name="${sectionType.name()}"
-                              id="content"><%=String.join("\n", ((ListSection) resume.getSections().get(sectionType)).getItems())%></textarea>
+                    <textarea rows="6" cols="50" name="${sectionType.name()}"><%=String.join("\n", ((ListSection) resume.getSections().get(sectionType)).getItems())%></textarea>
                 </c:if>
                 <c:if test="<%=!resume.getSections().containsKey(sectionType)%>">
-                     <textarea rows="6" cols="50" name="${sectionType.name()}"
-                               id="content"></textarea>
+                     <textarea rows="6" cols="50" name="${sectionType.name()}"></textarea>
                 </c:if>
             </c:when>
             <%--            TODO: add editable sections--%>
             <c:when test="${sectionType == 'EXPERIENCE' || sectionType =='EDUCATION'}">
+               <c:set var="datePattern" value="([\d]{2}\/[\d]{4})|[Сс]ейчас" />
+               <c:set var="namePlaceholder" value="Название" />
+               <c:set var="urlPlaceholder" value="Сcылка" />
+               <c:set var="startDatePlaceholder" value="Начало - MM/YYYY" />
+               <c:set var="endDatePlaceholder" value="Конец - MM/YYYY" />
+               <c:set var="titlePlaceholder" value="Заголовок" />
+               <c:set var="descriptionPlaceholder" value="Описание" />
+
                 <c:if test="<%=resume.getSections().containsKey(sectionType)%>">
                         <span>Добавить место:</span>
                     <p>
-                        <input type="text" name="${sectionType.name()}newCompanyName" size="66" placeholder="Название"> <br/>
-                        <input type="text" name="${sectionType.name()}newCompanyUrl" size="66" placeholder="Сcылка"> <br/>
-                        <input type="text" name="${sectionType.name()}newCompanyPeriodStart" size="30" placeholder="Начало">
-                        <input type="text" name="${sectionType.name()}newCompanyPeriodEnd" size="30" placeholder="Конец"> <br/>
-                        <input type="text" name="${sectionType.name()}newCompanyPeriodTitle" size="66" placeholder="Заголовок"> <br/>
-                        <input type="text" name="${sectionType.name()}newCompanyPeriodDescription" size="66" placeholder="Описание">
+                        <input type="text" name="${sectionType.name()}newCompanyName" size="66" placeholder="${namePlaceholder}"> <br/>
+                        <input type="text" name="${sectionType.name()}newCompanyUrl" size="66" placeholder="${urlPlaceholder}"> <br/>
+                        <input type="text" pattern="${datePattern}" name="${sectionType.name()}newCompanyPeriodStart" size="30" placeholder="${startDatePlaceholder}">
+                        <input type="text" pattern="${datePattern}" name="${sectionType.name()}newCompanyPeriodEnd" size="30" placeholder="${endDatePlaceholder}"> <br/>
+                        <input type="text" name="${sectionType.name()}newCompanyPeriodTitle" size="66" placeholder="${titlePlaceholder}"> <br/>
+                        <textarea rows="4" cols="62" name="${sectionType.name()}newCompanyPeriodDescription" placeholder="${descriptionPlaceholder}"></textarea>
                     </p>
                     <hr/>
                     <c:forEach var="company"
@@ -80,18 +84,18 @@
                         </p>
                         <span>Добавить должность:</span>
                         <p>
-                            <input type="text" name="${company.homepage.name}newPeriodStart" size="30" placeholder="Начало">
-                            <input type="text" name="${company.homepage.name}newPeriodEnd" size="30" placeholder="Конец"> <br/>
-                            <input type="text" name="${company.homepage.name}newPeriodTitle" size="66" placeholder="Заголовок"> <br/>
-                            <input type="text" name="${company.homepage.name}newPeriodDescription" size="66" placeholder="Описание">
+                            <input type="text" pattern="${datePattern}" name="${company.homepage.name}newPeriodStart" size="30" placeholder="${startDatePlaceholder}">
+                            <input type="text" pattern="${datePattern}" name="${company.homepage.name}newPeriodEnd" size="30" placeholder="${endDatePlaceholder}"> <br/>
+                            <input type="text" name="${company.homepage.name}newPeriodTitle" size="66" placeholder="${titlePlaceholder}"> <br/>
+                            <textarea rows="4" cols="62" name="${company.homepage.name}newPeriodDescription" placeholder="${descriptionPlaceholder}"></textarea>
                         </p>
                         <span>Редактировать должность:</span>
                             <c:forEach var="companyPeriod" items="${company.periods}">
                                 <p>
-                                <input type="text" name="${companyPeriod.title}StartDate" size="30" value="${DateUtil.dateFormat(companyPeriod.startDate)}">
-                                <input type="text" name="${companyPeriod.title}EndDate" size="30" value="${DateUtil.dateFormat(companyPeriod.endDate)}"> <br/>
+                                <input type="text" pattern="${datePattern}" name="${companyPeriod.title}StartDate" size="30" value="${DateUtil.dateFormat(companyPeriod.startDate)}">
+                                <input type="text" pattern="${datePattern}" name="${companyPeriod.title}EndDate" size="30" value="${DateUtil.dateFormat(companyPeriod.endDate)}"> <br/>
                                 <input type="text" name="${companyPeriod.title}Title" size="66" value="${companyPeriod.title}"> <br/>
-                                <input type="text" name="${companyPeriod.title}Description" size="66" value="${companyPeriod.description}">
+                                    <textarea rows="4" cols="62" name="${companyPeriod.title}Description">${companyPeriod.description}</textarea>
                                 </p>
                             </c:forEach>
                         <hr/>
@@ -100,12 +104,12 @@
                 <c:if test="<%=!resume.getSections().containsKey(sectionType)%>">
                     <span>Добавить место:</span>
                     <p>
-                        <input type="text" name="${sectionType.name()}" size="66" placeholder="Название"> <br/>
-                        <input type="text" name="${sectionType.name()}newCompanyUrl" size="66" placeholder="Сcылка"> <br/>
-                        <input type="text" name="${sectionType.name()}newCompanyPeriodStart" size="30" placeholder="Начало">
-                        <input type="text" name="${sectionType.name()}newCompanyPeriodEnd" size="30" placeholder="Конец"> <br/>
-                        <input type="text" name="${sectionType.name()}newCompanyPeriodTitle" size="66" placeholder="Заголовок"> <br/>
-                        <input type="text" name="${sectionType.name()}newCompanyPeriodDescription" size="66" placeholder="Описание">
+                        <input type="text" name="${sectionType.name()}" size="66" placeholder="${namePlaceholder}"> <br/>
+                        <input type="text" name="${sectionType.name()}newCompanyUrl" size="66" placeholder="${urlPlaceholder}"> <br/>
+                        <input type="text" pattern="${datePattern}" name="${sectionType.name()}newCompanyPeriodStart" size="30" placeholder="${startDatePlaceholder}">
+                        <input type="text" pattern="${datePattern}" name="${sectionType.name()}newCompanyPeriodEnd" size="30" placeholder="${endDatePlaceholder}"> <br/>
+                        <input type="text" name="${sectionType.name()}newCompanyPeriodTitle" size="66" placeholder="${titlePlaceholder}"> <br/>
+                        <textarea rows="4" cols="62" name="${sectionType.name()}newCompanyPeriodDescription" placeholder="${descriptionPlaceholder}"></textarea>
                     </p>
                     <hr/>
                 </c:if>
