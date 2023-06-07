@@ -27,7 +27,6 @@
         <c:forEach var="sectionEntry" items="${resume.sections}">
             <jsp:useBean id="sectionEntry"
                          type="java.util.Map.Entry<ru.javawebinar.basejava.model.SectionType, ru.javawebinar.basejava.model.AbstractSection>"/>
-            <c:set var="sectionName" value="${sectionEntry.key.name()}"/>
             <c:set var="type" value="${sectionEntry.key}"/>
             <c:set var="section" value="${sectionEntry.value}"/>
             <jsp:useBean id="section" type="ru.javawebinar.basejava.model.AbstractSection"/>
@@ -52,13 +51,23 @@
             <c:forEach var="company" items="<%= ((CompanySection)sectionEntry.getValue()).getCompanies()%>">
                 <p>
                 <table class="table-two">
-
-                    <tr>
-                        <th class="th-td-date"></th>
-                        <th class="th-td-two"><b> <a style="font-size: 16pt"
-                                                     href="${company.homepage.url}">${company.homepage.name}</a> </b>
-                        </th>
-                    </tr>
+                <c:choose>
+                    <c:when test="${empty company.homepage.url}">
+                        <tr>
+                            <th class="th-td-date"></th>
+                            <th class="th-td-two"><b> <span style="font-size: 16pt">${company.homepage.name}</span> </b>
+                            </th>
+                        </tr>
+                    </c:when>
+                    <c:otherwise>
+                        <tr>
+                            <th class="th-td-date"></th>
+                            <th class="th-td-two"><b> <a style="font-size: 16pt"
+                                                         href="${company.homepage.url}">${company.homepage.name}</a> </b>
+                            </th>
+                        </tr>
+                    </c:otherwise>
+                </c:choose>
 
                     <c:forEach var="period" items="${company.periods}">
                         <tr>

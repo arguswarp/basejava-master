@@ -65,7 +65,7 @@ public class ResumeServlet extends HttpServlet {
         String uuid = request.getParameter("uuid");
         String fullName = request.getParameter("fullName");
         Resume resume;
-        if (Objects.equals(uuid, "")) {
+        if (Objects.equals(uuid, "") || uuid == null) {
             resume = new Resume(fullName);
             storage.save(resume);
         } else {
@@ -140,8 +140,7 @@ public class ResumeServlet extends HttpServlet {
 
                                     periods.add(new Company.Period(DateUtil.of(updatedStartDate), DateUtil.of(updatedEndDate), updatedTitle, updatedDescription));
                                 }
-                                Company updatedCompany = new Company(updatedName, updatedUrl, periods);
-                                updatedList.add(updatedCompany);
+                                updatedList.add(new Company(updatedName, updatedUrl, periods));
                             }
                         }
                         resume.addSection(type, new CompanySection(updatedList));
