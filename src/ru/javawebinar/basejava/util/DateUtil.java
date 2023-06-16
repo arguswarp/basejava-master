@@ -5,7 +5,7 @@ import java.time.Month;
 import java.time.format.DateTimeFormatter;
 
 public class DateUtil {
-    private static final String NOW = "Сейчас";
+    private static final String NOW = "сейчас";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("MM/yyyy");
 
     public static LocalDate of(int year, Month month) {
@@ -17,7 +17,7 @@ public class DateUtil {
     }
 
     public static LocalDate of(String date) {
-        if (date.equals(NOW)) {
+        if (date.equalsIgnoreCase(NOW)) {
             return LocalDate.now();
         }
         String[] dateArray = date.split("/");

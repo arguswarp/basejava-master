@@ -13,12 +13,8 @@
         <url-pattern>/resume</url-pattern>
     </servlet-mapping>
 
-    <servlet>
-        <servlet-name>AddResumeServlet</servlet-name>
-        <servlet-class>ru.javawebinar.basejava.web.AddResumeServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>AddResumeServlet</servlet-name>
-        <url-pattern>/resume/add</url-pattern>
-    </servlet-mapping>
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>default</servlet-name>-->
+<!--        <url-pattern>/css/*</url-pattern>-->
+<!--    </servlet-mapping>-->
 </web-app>
