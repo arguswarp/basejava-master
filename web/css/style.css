@@ -20,7 +20,7 @@ table {
     background: #9c9c9c;
     width: fit-content;
     border-collapse: collapse;
-    border-radius: 10px;
+    /*border-radius: 10px;*/
     display: block;
     empty-cells: hide;
 }
@@ -110,9 +110,6 @@ button {
     text-decoration: none;
     display: block;
     font-size: 16px;
-    -webkit-border-radius: 15px;
-    -moz-border-radius: 15px;
-    border-radius: 15px;
 }
 
 button:hover {

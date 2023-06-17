@@ -93,6 +93,8 @@
     </c:choose>
     </c:forEach>
     </p>
+
+    <button type="button" onclick="window.history.back()">Назад</button>
 </section>
 <jsp:include page="fragments/footer.jsp"/>
 </body>
